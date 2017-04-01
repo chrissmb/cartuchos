@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cartuchos</title>
+
+<script src="https://code.jquery.com/jquery-3.2.0.min.js"
+	integrity="sha256-JAW99MJVpJBGcbzEuXk4Az05s/XyDdBomFqNlM3ic+I="
+	crossorigin="anonymous"></script>
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"></link>
+
+<!-- Última versão CSS compilada e minificada -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous"></link>
+
+<!-- Tema opcional -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+	crossorigin="anonymous"></link>
+
+<!-- Última versão JavaScript compilada e minificada -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+	integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+	crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
+
+</head>
+<body>
+	<script>
+        var app = angular.module('myApp', []);
+
+		app.run(function($rootScope) {
+			$rootScope.tela = "inicio";
+
+			$rootScope.cartuchos = [ {
+				descricao : "CE255X",
+				quantidade : 0,
+				status : true
+			}, {
+				descricao : "CB390A",
+				quantidade : 3,
+				status : true
+			}, {
+				descricao : "Q7551X",
+				quantidade : 1,
+				status : true
+			} ];
+
+			$rootScope.departamentoes = [ {
+				descricao : "adm",
+				status : true
+			}, {
+				descricao : "operação",
+				status : true
+			}, {
+				descricao : "balança",
+				status : true
+			} ];
+		});
+
+		app.controller('inicioCtrl', function($scope) {
+
+		});
+
+		app.controller('cartuchoCtrl', function($scope) {
+
+		});
+
+		app.controller('departamentoCtrl', function($scope) {
+			
+		});
+		
+		app.controller('estqEntradaCtrl', function($scope, $compile) {
+			var qtdForms = 1;
+			$scope.teste = 44;
+			$scope.addForm = function() {
+				qtdForms++;
+				$("#formsEntrada").append(
+					'<form class="form-inline"  id="formEntrada_'+qtdForms+'">'
+						+'<div class="form-group">'
+							+'<select class="form-control" ng-model="cartuchoSelecionado_'+qtdForms
+                            +'" ng-options="cartucho'+qtdForms+'.descricao for cartucho'+qtdForms+' in cartuchos">'
+								+'<option value="" disabled="true" selected="true">Cartucho</option>'
+							+'</select> '
+						+'</div> '
+						+'<div class="form-group">'
+							+'<input type="number" class="form-control" placeholder="Quantidade" min="1"/>'
+						+'</div>'
+					+'</form>'
+				);
+				$compile("#formsEntrada")($scope);
+			};
+			$scope.remForm = function() {
+				if (qtdForms > 0) {
+					$("#formEntrada_"+qtdForms).remove();
+					qtdForms--;
+				}
+			}
+		});
+		
+		app.controller('estqSaidaCtrl', function($scope) {
+			
+		});
+        
+        app.controller('registroCtrl', function($scope) {
+
+		});
+        
+        $(function() {
+            $(".datepicker").datepicker();
+        });
+        
+	</script>
+
+	<div ng-app="myApp">
+
+		<!--==Menu ============================================================================== -->
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" 
+							data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+					</button>
+					<a class="navbar-brand" href="#" ng-click="tela = 'inicio'">
+						<span class="glyphicon glyphicon-home" aria-hidden="true"></span> Início
+					</a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse"
+					id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Cadastro <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="#" ng-click="tela = 'cartucho'">Cartucho</a></li>
+								<li><a href="#" ng-click="tela = 'departamento'">Departamento</a></li>
+							</ul></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-inbox" aria-hidden="true"></span> Estoque <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="#" data-toggle="modal" data-target="#modalEntrada">Entrada</a></li>
+								<li><a href="#" data-toggle="modal" data-target="#modalSaida">Saída</a></li>
+							</ul></li>
+						<li>
+							<a href="#" ng-click="tela = 'teste'">
+								<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Registros
+							</a>
+						</li>
+					</ul>
+
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Usuario <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="#">Alterar senha</a></li>
+								<li><a href="#">Logout</a></li>
+							</ul></li>
+					</ul>
+				</div>
+				<!-- /.navbar-collapse -->
+			</div>
+			<!-- /.container-fluid -->
+		</nav>
+
+		<!--==Inicio ============================================================================== -->
+		<div ng-controller="inicioCtrl" ng-show="tela == 'inicio'">
+			<button type="button" class="btn btn-default" data-toggle="modal"
+				data-target="#modalEntrada">
+				<span class="glyphicon glyphicon-plus"></span> Entrada
+			</button>
+			<button type="button" class="btn btn-default" data-toggle="modal"
+				data-target="#modalSaida">
+				<span class="glyphicon glyphicon-minus"></span> Saída
+			</button>
+			<button type="button" class="btn btn-default pull-right">
+				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
+			</button>
+			
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Cartucho</th>
+							<th>Quantidade</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="cartucho in cartuchos">
+							<td>{{ cartucho.descricao }}</td>
+							<td>{{ cartucho.quantidade }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!--==Cadastro-cartuchos ============================================================================== -->
+		<div ng-controller="cartuchoCtrl" ng-show="tela == 'cartucho'">
+			<button type="button" class="btn btn-default" data-toggle="modal"
+				data-target="#modalCartucho">
+				<span class="glyphicon glyphicon-plus"></span> Cadastrar cartucho
+			</button>
+			<button type="button" class="btn btn-default pull-right">
+				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
+			</button>
+			
+			<div class="table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>Cartucho</th>
+							<th>Ativo</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="cartucho in cartuchos">
+							<td>{{ cartucho.descricao }}</td>
+							<td><input type="checkbox" ng-model="cartucho.status" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div id="modalCartucho" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Cartucho</h4>
+						</div>
+						<div class="modal-body">
+							<form>
+								<div class="form-group">
+									<label>Descrição</label>
+									<input class="form-control" type="text" ng-model="cartucho.descricao"/>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-save"></span> Salvar
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--==Cadastro-departamentoes ============================================================================== -->
+		<div ng-controller="departamentoCtrl" ng-show="tela == 'departamento'">
+			<button type="button" class="btn btn-default" data-toggle="modal"
+				data-target="#modalDepartamento">
+				<span class="glyphicon glyphicon-plus"></span> Cadastrar departamento
+			</button>
+			<button type="button" class="btn btn-default pull-right">
+				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
+			</button>
+			
+			<div class="table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>Departamento</th>
+							<th>Ativo</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="departamento in departamentoes">
+							<td>{{ departamento.descricao }}</td>
+							<td><input type="checkbox" ng-model="departamento.status" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div id="modalDepartamento" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">Departamento</h4>
+						</div>
+						<div class="modal-body">
+							<form>
+								<div class="form-group">
+									<label>Descrição</label>
+									<input class="form-control" type="text" ng-model="departamento.descricao"/>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-save"></span> Salvar
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--==Estoque-entrada ============================================================================== ->
+		<div id="modalEntrada" class="modal fade" role="dialog" ng-controller="estqEntradaCtrl">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Entrada no estoque</h4>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label>Cartucho</label>
+								<select class="form-control" ng-model="cartuchoSelecionado" 
+										ng-options="cartucho.descricao for cartucho in cartuchos">
+								</select>
+							</div>
+							<div class="form-group">
+								<label>Quantidade</label>
+								<input type="number" class="form-control" min="1"/>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-save"></span> Salvar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div-->
+		
+		<div id="modalEntrada" class="modal fade" role="dialog" ng-controller="estqEntradaCtrl">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Entrada no estoque</h4>
+					</div>
+					<div class="modal-body">
+						<div id="formsEntrada">
+							<form class="form-inline" id="formEntrada_1">
+								<div class="form-group">
+									<select id="combobox" class="form-control" ng-model="cartuchoSelecionado_1" 
+											ng-options="cartucho_1.descricao for cartucho_1 in cartuchos">
+										<option value="" disabled="true" selected="true">Cartucho</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<input type="number" class="form-control" placeholder="Quantidade" min="1"/>
+								</div>
+							</form>
+						</div>
+						<button type="button" class="btn btn-default" ng-click="addForm()">
+							<span class="glyphicon glyphicon-plus"></span>
+						</button>
+						<button type="button" class="btn btn-default" ng-click="remForm()">
+							<span class="glyphicon glyphicon-minus"></span>
+						</button>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-save"></span> Salvar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--==Estoque-saída ============================================================================== -->
+		<div id="modalSaida" class="modal fade" role="dialog" ng-controller="estqSaidaCtrl">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Saída no estoque</h4>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label>Cartucho</label>
+								<select class="form-control" ng-model="cartuchoSelecionado" 
+										ng-options="cartucho.descricao for cartucho in cartuchos">
+								</select>
+							</div>
+							<div class="form-group">
+								<label>Quantidade</label>
+								<input type="number" class="form-control" min="1"/>
+							</div>
+							<div class="form-group">
+								<label>Departamento</label>
+								<select class="form-control" ng-model="departamentoSelecionado" 
+										ng-options="departamento.descricao for departamento in departamentoes">
+								</select>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-save"></span> Salvar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--==Registros ============================================================================== -->
+		<div ng-conttroller="registroCtrl" ng-show="tela == 'teste'">
+			<form class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control datepicker" placeholder="Data início"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control datepicker" placeholder="Data fim"/>
+                </div>
+                <button type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-filter"></span> Filtrar
+                </button>
+                <button type="button" class="btn btn-default pull-right">
+				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
+			</button>
+            </form>
+            
+            <div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Data</th>
+							<th>Toner</th>
+                            <th>Departamento</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="registro in registros">
+							<td>{{ registro.data }}</td>
+							<td>{{ registro.toner.descricao }}</td>
+                            <td>{{ registro.deparamento }}</td>
+						</tr>
+                        <tr>
+							<td>123</td>
+							<td>123</td>
+                            <td>123</td>
+						</tr>
+                        <tr>
+							<td>123</td>
+							<td>123</td>
+                            <td>123</td>
+						</tr>
+                        <tr>
+							<td>123</td>
+							<td>123</td>
+                            <td>123</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+            
+		</div>
+
+	</div>
+</body>
+</html>
