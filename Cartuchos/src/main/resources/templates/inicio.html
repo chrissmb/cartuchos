@@ -24,7 +24,7 @@
 		app.run(function($rootScope) {
 			$rootScope.tela = "inicio";
 
-			$rootScope.cartuchos = [ {
+			$rootScope.cartuchos = []; /* {
 				descricao : "CE255X",
 				quantidade : 0,
 				status : true
@@ -36,9 +36,9 @@
 				descricao : "Q7551X",
 				quantidade : 1,
 				status : true
-			} ];
+			} ];*/
 
-			$rootScope.departamentoes = [ {
+			$rootScope.departamentoes = []; /* {
 				descricao : "adm",
 				status : true
 			}, {
@@ -47,11 +47,19 @@
 			}, {
 				descricao : "balança",
 				status : true
-			} ];
+			} ];*/
 		});
 
-		app.controller('inicioCtrl', function($scope) {
-
+		app.controller('inicioCtrl', function($scope, $http) {
+			
+			$scope.telaInicio = function() {
+				$rootScope.tela = "inicio";
+				var endereco = "https://tomcat-chrissmb.c9users.io/";
+				$http.get(endereco + "cartuchos/")
+				.then(function(response) {
+					$rootScope.cartuchos = reponse.data;
+				});
+			}
 		});
 
 		app.controller('cartuchoCtrl', function($scope) {
@@ -116,7 +124,7 @@
 						<span class="sr-only">Toggle navigation</span>
 						<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
 					</button>
-					<a class="navbar-brand" href="#" ng-click="tela = 'inicio'">
+					<a class="navbar-brand" href="#" ng-click="telaInicio()">
 						<span class="glyphicon glyphicon-home" aria-hidden="true"></span> Início
 					</a>
 				</div>
