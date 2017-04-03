@@ -19,53 +19,48 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.chris.cartuchos.model.Cartucho;
-import br.com.chris.cartuchos.model.CartuchoDao;
+import br.com.chris.cartuchos.model.Departamento;
+import br.com.chris.cartuchos.model.DepartamentoDao;
 
 @RestController
-@RequestMapping("/cartuchos")
-public class CartuchoController {
+@RequestMapping("/departamentos")
+public class DepartamentoController {
 	
 	@Autowired
-	private CartuchoDao dao;
+	private DepartamentoDao dao;
 	
 	@GetMapping()
-	public ResponseEntity<List<Cartucho>> getAllCartuchos() {
+	public ResponseEntity<List<Departamento>> getAllDepartamento() {
 		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Cartucho> getCartucho(@PathVariable Long id) {
+	public ResponseEntity<Departamento> getDepartamento(@PathVariable Long id) {
 		return new ResponseEntity<>(dao.findOne(id), HttpStatus.OK);
 	}
 	
 	@GetMapping(params = "descricao")
-	public ResponseEntity<Cartucho> getCartuchoByDescricao(
+	public ResponseEntity<Departamento> getDepartamentoByDescricao(
 			@RequestParam(value="descricao") String descricao) {
 		return new ResponseEntity<>(dao.findByDescricao(descricao), HttpStatus.OK);
 	}
 	
-	@GetMapping(params = "descricaoStartingWith")
-	public ResponseEntity<List<Cartucho>> getCartuchoByDescricaoStartingWith(
-			@RequestParam(value="descricaoStartingWith") String descricao) {
-		return new ResponseEntity<>(dao.findByDescricaoStartingWith(descricao), HttpStatus.OK);
-	}
-	
 	@PostMapping()
-	public ResponseEntity<Cartucho> addCartucho(@RequestBody Cartucho cartucho) {
-		return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
+	public ResponseEntity<Departamento> addDepartamento(@RequestBody Departamento departamento) {
+		return new ResponseEntity<>(dao.save(departamento), HttpStatus.OK);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Cartucho> updateCartucho(@RequestBody Cartucho cartucho, 
+	public ResponseEntity<Departamento> updateDepartamento(@RequestBody Departamento departamento, 
 			@PathVariable Long id) {
-		cartucho.setId(id);
-		return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
+		departamento.setId(id);
+		return new ResponseEntity<>(dao.save(departamento), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteCartucho(@PathVariable Long id) {
+	public ResponseEntity<?> deleteDepartamento(@PathVariable Long id) {
 		dao.delete(dao.findOne(id));
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+
 }
