@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -15,12 +16,13 @@ public class Cartucho {
 	
 	@Size(min=5,max=10)
 	@Column(unique=true)
+	@NotNull
 	private String descricao;
 	
 	@Min(0)
 	private int quantidade;
 	
-	private boolean habilitado;
+	private boolean ativo;
 
 	public Long getId() {
 		return id;
@@ -46,11 +48,11 @@ public class Cartucho {
 		this.quantidade = quantidade;
 	}
 
-	public boolean isHabilitado() {
-		return habilitado;
+	public boolean isAtivo() {
+		return ativo;
 	}
 
-	public void setHabilitado(boolean habilitado) {
-		this.habilitado = habilitado;
+	public void setAtivo(boolean ativo) {
+		this.ativo = ativo;
 	}
 }

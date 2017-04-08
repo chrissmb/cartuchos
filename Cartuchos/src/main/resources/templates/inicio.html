@@ -22,22 +22,10 @@
         var app = angular.module('myApp', []);
 
 		app.run(function($rootScope, $http) {
-			$rootScope.tela = "inicio";
-			$rootScope.url = "https://tomcat-chrissmb.c9users.io/"
+			$rootScope.url = "http://127.0.0.1:8080/"
 
-			$rootScope.cartuchos = []; /* {
-				descricao : "CE255X",
-				quantidade : 0,
-				status : true
-			}, {
-				descricao : "CB390A",
-				quantidade : 3,
-				status : true
-			}, {
-				descricao : "Q7551X",
-				quantidade : 1,
-				status : true
-			} ];*/
+			$rootScope.cartuchos = [];
+
 			$rootScope.listaCartuchos = function() {
 				$http.get($rootScope.url + "cartuchos")
 				.then(function(response) {
@@ -45,16 +33,8 @@
 				});
 			}
 
-			$rootScope.departamentoes = []; /* {
-				descricao : "adm",
-				status : true
-			}, {
-				descricao : "operação",
-				status : true
-			}, {
-				descricao : "balança",
-				status : true
-			} ];*/
+			$rootScope.departamentoes = [];
+			
 			$rootScope.listaDepartamentos = function() {
 				$http.get($rootScope.url + "cartuchos")
 				.then(function(response) {
@@ -62,22 +42,36 @@
 				});
 			}
 		});
-
-		app.controller('inicioCtrl', function($scope, $rootScope, $http) {
+		
+		app.controller('menuCtrl', function($scope, $rootScope, $http) {
 			$scope.telaInicio = function() {
 				$rootScope.tela = "inicio";
-				$rootScope.listaCartuchos;
+				$rootScope.listaCartuchos();
 			}
+			
+			$scope.telaCartucho = function() {
+				$rootScope.tela = "cartucho";
+				$rootScope.listaCartuchos();
+			}
+			
+			$scope.telaDepartamento = function() {
+				$rootScope.tela = "departamento";
+				$rootScope.listaDepartamentos();
+			}
+			
+			$scope.tela
+			
+			$scope.telaInicio();
+		});
+		
+		app.controller('inicioCtrl', function($scope, $rootScope, $http) {
+			
 		});
 
 		app.controller('cartuchoCtrl', function($scope, $rootScope, $http) {
-			$scope.telaCartucho = function() {
-				$rootScope.tela = "cartucho";
-				$rootScope.listaCartuchos;
-			}
-			
 			$scope.saveCartucho = function() {
 				if ($scope.cartucho.id == null) {
+					$scope.cartucho.ativo = true;
 					$http.post($rootScope.url + "cartuchos", $scope.cartucho)
 					.then(function() {
 						fechaModal();
@@ -91,18 +85,24 @@
 				}
 			}
 			
+			$scope.loadCartucho = function(cartucho) {
+				$scope.cartucho = cartucho;
+			}
+			
 			var fechaModal = function() {
-				$scope.cartucho = {};
+				$scope.novoCartucho();
 				$rootScope.listaCartuchos();
 				$('#modalCartucho').modal('toggle');
+			}
+			
+			$scope.novoCartucho = function() {
+				$scope.cartucho = {};
+				$scope.cartucho.ativo = true;
 			}
 		});
 
 		app.controller('departamentoCtrl', function($scope, $rootScope, $http) {
-			$scope.telaDepartamento = function() {
-				$rootScope.tela = "departamento";
-				$rootScope.listaDepartamentos;
-			}
+			
 		});
 		
 		app.controller('estqEntradaCtrl', function($scope, $compile, $rootScope, $http) {
@@ -158,7 +158,7 @@
 	<div ng-app="myApp">
 
 		<!--==Menu ============================================================================== -->
-		<nav class="navbar navbar-default">
+		<nav class="navbar navbar-default" ng-controller="menuCtrl">
 			<div class="container-fluid">
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header">
@@ -181,8 +181,8 @@
 								<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Cadastro <span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu">
-								<li><a href="#" ng-click="tela = 'cartucho'">Cartucho</a></li>
-								<li><a href="#" ng-click="tela = 'departamento'">Departamento</a></li>
+								<li><a href="#" ng-click="telaCartucho()">Cartucho</a></li>
+								<li><a href="#" ng-click="telaDepartamento()">Departamento</a></li>
 							</ul></li>
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -250,10 +250,10 @@
 		<!--==Cadastro-cartuchos ============================================================================== -->
 		<div ng-controller="cartuchoCtrl" ng-show="tela == 'cartucho'">
 			<button type="button" class="btn btn-default" data-toggle="modal"
-				data-target="#modalCartucho">
+				data-target="#modalCartucho" ng-click="novoCartucho()">
 				<span class="glyphicon glyphicon-plus"></span> Cadastrar cartucho
 			</button>
-			<button type="button" class="btn btn-default pull-right">
+			<button type="button" class="btn btn-default pull-right" ng-click="listaCartuchos()">
 				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
 			</button>
 			
@@ -266,9 +266,10 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="cartucho in cartuchos">
+						<tr ng-repeat="cartucho in cartuchos" data-toggle="modal"
+								data-target="#modalCartucho" ng-click="loadCartucho(cartucho)">
 							<td>{{ cartucho.descricao }}</td>
-							<td><input type="checkbox" ng-model="cartucho.status" /></td>
+							<td><input type="checkbox" ng-model="cartucho.ativo" disabled/></td>
 						</tr>
 					</tbody>
 				</table>
@@ -287,9 +288,13 @@
 									<label>Descrição</label>
 									<input class="form-control" type="text" ng-model="cartucho.descricao"/>
 								</div>
-								<div class="form-group">
+								<!-- div class="form-group" ng-show="cartucho.id == null">
 									<label>Quantidade inicial</label>
 									<input type="number" class="form-control" min="1" ng-model="cartucho.quantidade"/>
+								</div-->
+								<div class="form-group">
+									<label>Ativo</label>
+									<input type="checkbox" ng-model="cartucho.ativo"/>
 								</div>
 							</form>
 						</div>
@@ -324,7 +329,7 @@
 					<tbody>
 						<tr ng-repeat="departamento in departamentoes">
 							<td>{{ departamento.descricao }}</td>
-							<td><input type="checkbox" ng-model="departamento.status" /></td>
+							<td><input type="checkbox" ng-model="departamento.ativo" /></td>
 						</tr>
 					</tbody>
 				</table>

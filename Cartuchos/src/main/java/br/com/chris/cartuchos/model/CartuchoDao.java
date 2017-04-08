@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CartuchoDao extends JpaRepository<Cartucho, Long> {
 	
 	List<Cartucho> findByDescricaoStartingWith(String descricao);
+	List<Cartucho> findByAtivoTrue();
+	List<Cartucho> findByAtivoTrueAndDescricaoStartingWith(String descricao);
 	Cartucho findByDescricao(String descricao);
 }

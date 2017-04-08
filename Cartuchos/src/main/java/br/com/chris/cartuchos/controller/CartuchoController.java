@@ -51,6 +51,19 @@ public class CartuchoController {
 		return new ResponseEntity<>(dao.findByDescricaoStartingWith(descricao), HttpStatus.OK);
 	}
 	
+	@GetMapping("ativo")
+	public ResponseEntity<List<Cartucho>> getCartuchoByAtivoTrue() {
+		return new ResponseEntity<>(
+				dao.findByAtivoTrue(), HttpStatus.OK);
+	}
+		
+	@GetMapping(value = "ativo", params = "descricaoStartingWith")
+	public ResponseEntity<List<Cartucho>> getCartuchoByAtivoAndDescricaoStartingWith(
+			@RequestParam(value="descricaoStartingWith") String descricao) {
+		return new ResponseEntity<>(
+				dao.findByAtivoTrueAndDescricaoStartingWith(descricao), HttpStatus.OK);
+	}
+	
 	@PostMapping()
 	public ResponseEntity<Cartucho> addCartucho(@RequestBody Cartucho cartucho) {
 		return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
