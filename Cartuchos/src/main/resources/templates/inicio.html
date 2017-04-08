@@ -21,8 +21,9 @@
 	<script>
         var app = angular.module('myApp', []);
 
-		app.run(function($rootScope) {
+		app.run(function($rootScope, $http) {
 			$rootScope.tela = "inicio";
+			$rootScope.url = "https://tomcat-chrissmb.c9users.io/"
 
 			$rootScope.cartuchos = []; /* {
 				descricao : "CE255X",
@@ -37,6 +38,12 @@
 				quantidade : 1,
 				status : true
 			} ];*/
+			$rootScope.listaCartuchos = function() {
+				$http.get($rootScope.url + "cartuchos")
+				.then(function(response) {
+					$rootScope.cartuchos = response.data;
+				});
+			}
 
 			$rootScope.departamentoes = []; /* {
 				descricao : "adm",
@@ -48,52 +55,88 @@
 				descricao : "balança",
 				status : true
 			} ];*/
-		});
-
-		app.controller('inicioCtrl', function($scope, $http) {
-			
-			$scope.telaInicio = function() {
-				$rootScope.tela = "inicio";
-				var endereco = "https://tomcat-chrissmb.c9users.io/";
-				$http.get(endereco + "cartuchos/")
+			$rootScope.listaDepartamentos = function() {
+				$http.get($rootScope.url + "cartuchos")
 				.then(function(response) {
-					$rootScope.cartuchos = reponse.data;
+					$rootScope.cartuchos = response.data;
 				});
 			}
 		});
 
-		app.controller('cartuchoCtrl', function($scope) {
-
+		app.controller('inicioCtrl', function($scope, $rootScope, $http) {
+			$scope.telaInicio = function() {
+				$rootScope.tela = "inicio";
+				$rootScope.listaCartuchos;
+			}
 		});
 
-		app.controller('departamentoCtrl', function($scope) {
+		app.controller('cartuchoCtrl', function($scope, $rootScope, $http) {
+			$scope.telaCartucho = function() {
+				$rootScope.tela = "cartucho";
+				$rootScope.listaCartuchos;
+			}
 			
+			$scope.saveCartucho = function() {
+				if ($scope.cartucho.id == null) {
+					$http.post($rootScope.url + "cartuchos", $scope.cartucho)
+					.then(function() {
+						fechaModal();
+					})
+				} else {
+					$http.put($rootScope.url + "cartuchos/" + $scope.cartucho.id, 
+							$scope.cartucho)
+					.then(function() {
+						fechaModal();
+					})
+				}
+			}
+			
+			var fechaModal = function() {
+				$scope.cartucho = {};
+				$rootScope.listaCartuchos();
+				$('#modalCartucho').modal('toggle');
+			}
+		});
+
+		app.controller('departamentoCtrl', function($scope, $rootScope, $http) {
+			$scope.telaDepartamento = function() {
+				$rootScope.tela = "departamento";
+				$rootScope.listaDepartamentos;
+			}
 		});
 		
-		app.controller('estqEntradaCtrl', function($scope, $compile) {
+		app.controller('estqEntradaCtrl', function($scope, $compile, $rootScope, $http) {
 			var qtdForms = 1;
-			$scope.teste = 44;
+			
 			$scope.addForm = function() {
 				qtdForms++;
 				$("#formsEntrada").append(
 					'<form class="form-inline"  id="formEntrada_'+qtdForms+'">'
 						+'<div class="form-group">'
 							+'<select class="form-control" ng-model="cartuchoSelecionado_'+qtdForms
-                            +'" ng-options="cartucho'+qtdForms+'.descricao for cartucho'+qtdForms+' in cartuchos">'
+                            +'" ng-options="cartucho_'+qtdForms+'.descricao for cartucho_'+qtdForms+' in cartuchos">'
 								+'<option value="" disabled="true" selected="true">Cartucho</option>'
 							+'</select> '
 						+'</div> '
 						+'<div class="form-group">'
-							+'<input type="number" class="form-control" placeholder="Quantidade" min="1"/>'
+							+'<input type="number" class="form-control" placeholder="Quantidade" '
+									+'min="1" ng-model="cartucho_'+qtdForms+'.entrada"/>'
 						+'</div>'
 					+'</form>'
 				);
 				$compile("#formsEntrada")($scope);
 			};
+			
 			$scope.remForm = function() {
 				if (qtdForms > 0) {
 					$("#formEntrada_"+qtdForms).remove();
 					qtdForms--;
+				}
+			}
+			
+			$scope.addTonersEstq - function() {
+				for (var i = 0; i < qtdForms; i++) {
+					$http.post($rootScope.url + "")
 				}
 			}
 		});
@@ -182,7 +225,7 @@
 				data-target="#modalSaida">
 				<span class="glyphicon glyphicon-minus"></span> Saída
 			</button>
-			<button type="button" class="btn btn-default pull-right">
+			<button type="button" class="btn btn-default pull-right" ng-click="listaCartuchos()">
 				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
 			</button>
 			
@@ -244,10 +287,14 @@
 									<label>Descrição</label>
 									<input class="form-control" type="text" ng-model="cartucho.descricao"/>
 								</div>
+								<div class="form-group">
+									<label>Quantidade inicial</label>
+									<input type="number" class="form-control" min="1" ng-model="cartucho.quantidade"/>
+								</div>
 							</form>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default">
+							<button type="button" class="btn btn-default" ng-click="saveCartucho()">
 								<span class="glyphicon glyphicon-save"></span> Salvar
 							</button>
 						</div>
@@ -356,7 +403,8 @@
 									</select>
 								</div>
 								<div class="form-group">
-									<input type="number" class="form-control" placeholder="Quantidade" min="1"/>
+									<input type="number" class="form-control" placeholder="Quantidade" 
+											min="1" ng-model="cartucho_1.quantidade"/>
 								</div>
 							</form>
 						</div>
