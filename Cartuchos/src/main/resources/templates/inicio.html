@@ -22,8 +22,6 @@
         var app = angular.module('myApp', []);
 
 		app.run(function($rootScope, $http) {
-			//$rootScope.url = "http://127.0.0.1:8080/"
-
 			$rootScope.cartuchos = [];
 
 			$rootScope.listaCartuchos = function() {
@@ -31,20 +29,18 @@
 				.then(function(response) {
 					$rootScope.cartuchos = response.data;
 				}, function(reason) {
-					alert("Falha\n" + 
-							reason.status + ": " + reason.statusText);
+					alert("Falha\n" + reason.status + ": " + reason.statusText);
 				});
 			}
 
-			$rootScope.departamentoes = [];
+			$rootScope.departamentos = [];
 			
 			$rootScope.listaDepartamentos = function() {
-				$http.get("cartuchos")
+				$http.get("departamentos")
 				.then(function(response) {
-					$rootScope.cartuchos = response.data;
+					$rootScope.departamentos = response.data;
 				}, function(reason) {
-					alert("Falha\n" + 
-							reason.status + ": " + reason.statusText);
+					alert("Falha\n" + reason.status + ": " + reason.statusText);
 				});
 			}
 			
@@ -66,7 +62,10 @@
 				$rootScope.listaDepartamentos();
 			}
 			
-			$scope.tela
+			$scope.telaRegistro = function() {
+				$rootScope.tela = "registro";
+				$rootScope.listaRegistros();
+			}
 			
 			$scope.telaInicio();
 		});
@@ -74,14 +73,14 @@
 		app.controller('inicioCtrl', function($scope, $rootScope, $http) {
 			
 		});
-
+		
 		app.controller('cartuchoCtrl', function($scope, $rootScope, $http) {
 			$scope.saveCartucho = function() {
 				if ($scope.cartucho.id == null) {
 					$scope.cartucho.ativo = true;
 					$http.post("cartuchos", $scope.cartucho)
 					.then(function() {
-						fechaModal();
+						$scope.fechaModalCartucho();
 					}, function(reason) {
 						alert("Falha\n" + 
 								reason.status + ": " + reason.statusText);
@@ -90,20 +89,18 @@
 					$http.put("cartuchos/" + $scope.cartucho.id, 
 							$scope.cartucho)
 					.then(function() {
-						fechaModal();
+						$scope.fechaModalCartucho();
 					}, function(reason) {
-						alert("Falha\n" + 
-								reason.status + ": " + reason.statusText);
+						alert("Falha\n" + reason.status + ": " + reason.statusText);
 					});
 				}
 			}
 			
 			$scope.loadCartucho = function(cartucho) {
-				$scope.cartucho = cartucho;
+				$scope.cartucho = angular.copy(cartucho);
 			}
 			
-			var fechaModal = function() {
-				$scope.novoCartucho();
+			$scope.fechaModalCartucho = function() {
 				$rootScope.listaCartuchos();
 				$('#modalCartucho').modal('toggle');
 			}
@@ -116,16 +113,56 @@
 			$scope.removeCartucho = function() {
 				$http.delete("cartuchos/"+ $scope.cartucho.id)
 				.then(function() {
-					fechaModal();
+					$scope.fechaModalCartucho();
 				}, function(reason) {
-					alert("Falha\n" + 
-							reason.status + ": " + reason.statusText);
+					alert("Falha\n" + reason.status + ": " + reason.statusText);
 				});
 			}
 		});
-
+		
 		app.controller('departamentoCtrl', function($scope, $rootScope, $http) {
+			$scope.loadDepartamento = function(departamento) {
+				$scope.departamento = angular.copy(departamento);
+			}
 			
+			$scope.novoDepartamento = function() {
+				$scope.departamento = {};
+				$scope.departamento.ativo = true;
+			}
+			
+			$scope.fechaModalDepartamento = function() {
+				$rootScope.listaDepartamentos();
+				$('#modalDepartamento').modal('toggle');
+			}
+			
+			$scope.saveDepartamento = function() {
+				if ($scope.departamento.id == null) {
+					$http.post("departamentos", $scope.departamento)
+					.then(function(){
+						$scope.fechaModalDepartamento();
+					}, function(reason) {
+						alert("Falha\n" + 
+								reason.status + ": " + reason.statusText);
+					});
+				} else {
+					$http.put("departamentos/" + $scope.departamento.id, 
+							$scope.departamento)
+					.then(function(){
+						$scope.fechaModalDepartamento();
+					}, function(reason) {
+						alert("Falha\n" + reason.status + ": " + reason.statusText);
+					});
+				}
+			}
+			
+			$scope.removeDepartamento = function() {
+				$http.delete("departametos")
+				.then(function() {
+					$scope.fechaModalDepartamento();
+				}, function(reason) {
+					alert("Falha\n" + reason.status + ": " + reason.statusText);
+				});
+			}
 		});
 		
 		app.controller('estqEntradaCtrl', function($scope, $compile, $rootScope, $http) {
@@ -148,7 +185,7 @@
 					+'</form>'
 				);
 				$compile("#formsEntrada")($scope);
-			};
+			}
 			
 			$scope.remForm = function() {
 				if (qtdForms > 0) {
@@ -216,7 +253,7 @@
 								<li><a href="#" data-toggle="modal" data-target="#modalSaida">Saída</a></li>
 							</ul></li>
 						<li>
-							<a href="#" ng-click="tela = 'teste'">
+							<a href="#" ng-click="telaRegistro()">
 								<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Registros
 							</a>
 						</li>
@@ -224,8 +261,11 @@
 
 					<ul class="nav navbar-nav navbar-right">
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-								<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Usuario <span class="caret"></span>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" 
+									role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-user" aria-hidden="true"></span> 
+								Usuario 
+								<span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu">
 								<li><a href="#">Alterar senha</a></li>
@@ -240,17 +280,31 @@
 
 		<!--==Inicio ============================================================================== -->
 		<div ng-controller="inicioCtrl" ng-show="tela == 'inicio'">
-			<button type="button" class="btn btn-default" data-toggle="modal"
-				data-target="#modalEntrada">
-				<span class="glyphicon glyphicon-plus"></span> Entrada
-			</button>
-			<button type="button" class="btn btn-default" data-toggle="modal"
-				data-target="#modalSaida">
-				<span class="glyphicon glyphicon-minus"></span> Saída
-			</button>
-			<button type="button" class="btn btn-default pull-right" ng-click="listaCartuchos()">
-				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
-			</button>
+			<form class="form-inline">
+				<div class="form-group">
+					<button type="button" class="btn btn-default" data-toggle="modal"
+							data-target="#modalEntrada">
+						<span class="glyphicon glyphicon-plus"></span> Entrada
+					</button>
+				</div>
+				<div class="form-group">
+					<button type="button" class="btn btn-default" data-toggle="modal"
+							data-target="#modalSaida">
+						<span class="glyphicon glyphicon-minus"></span> Saída
+					</button>
+				</div>
+				<div class="form-group">
+					<input type="text" class="form-control" placeholder="Busca" ng-model="busca"/>
+				</div>
+				<div class="form-group pull-right">
+					<button type="button" class="btn btn-default" 
+							ng-click="listaCartuchos()">
+						<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
+					</button>
+				</div>
+			</form>
+			
+			
 			
 			<div class="table-responsive">
 				<table class="table">
@@ -261,7 +315,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="cartucho in cartuchos">
+						<tr ng-repeat="cartucho in cartuchos | filter:busca">
 							<td>{{ cartucho.descricao }}</td>
 							<td>{{ cartucho.quantidade }}</td>
 						</tr>
@@ -322,15 +376,18 @@
 							<form>
 								<div class="form-group">
 									<label>Descrição</label>
-									<input class="form-control" type="text" ng-model="cartucho.descricao"/>
+									<input class="form-control" type="text" ng-model="cartucho.descricao" 
+											maxlength="10"/>
 								</div>
 								<!-- div class="form-group" ng-show="cartucho.id == null">
 									<label>Quantidade inicial</label>
 									<input type="number" class="form-control" min="1" ng-model="cartucho.quantidade"/>
 								</div-->
-								<div class="form-group">
-									<label>Ativo</label>
-									<input type="checkbox" ng-model="cartucho.ativo"/>
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" ng-model="cartucho.ativo"/>
+										Ativo
+									</label>
 								</div>
 							</form>
 						</div>
@@ -348,15 +405,24 @@
 			</div>
 		</div>
 
-		<!--==Cadastro-departamentoes ============================================================================== -->
+		<!--==Cadastro-departamentos ============================================================================== -->
 		<div ng-controller="departamentoCtrl" ng-show="tela == 'departamento'">
-			<button type="button" class="btn btn-default" data-toggle="modal"
-				data-target="#modalDepartamento">
-				<span class="glyphicon glyphicon-plus"></span> Cadastrar departamento
-			</button>
-			<button type="button" class="btn btn-default pull-right">
-				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
-			</button>
+			<form class="form-inline">
+				<div class="form-group">
+					<button type="button" class="btn btn-default" data-toggle="modal"
+						data-target="#modalDepartamento" ng-click="novoDepartamento()">
+						<span class="glyphicon glyphicon-plus"></span> Cadastrar departamento
+					</button>
+				</div>
+				<div class="form-group">
+					<input type="text" class="form-control" placeholder="Busca" ng-model="busca"/>
+				</div>
+				<div class="form-group pull-right">
+					<button type="button" class="btn btn-default" ng-click="listaDepartamentos()">
+						<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
+					</button>
+				</div>
+			</form>
 			
 			<div class="table-responsive">
 				<table class="table table-hover">
@@ -367,7 +433,9 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="departamento in departamentoes">
+						<tr ng-repeat="departamento in departamentos | filter:busca" 
+								data-toggle="modal" data-target="#modalDepartamento" 
+								ng-click="loadDepartamento(departamento)">
 							<td>{{ departamento.descricao }}</td>
 							<td><input type="checkbox" ng-model="departamento.ativo" /></td>
 						</tr>
@@ -386,12 +454,23 @@
 							<form>
 								<div class="form-group">
 									<label>Descrição</label>
-									<input class="form-control" type="text" ng-model="departamento.descricao"/>
+									<input class="form-control" type="text" ng-model="departamento.descricao" 
+											maxlength="20"/>
+								</div>
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" ng-model="departamento.ativo"/>
+										Ativo
+									</label>	
 								</div>
 							</form>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default">
+							<button type="button" class="btn btn-danger pull-left" 
+									ng-click="removeDepartamento()" ng-hide="departamento.id == null">
+								<span class="glyphicon glyphicon-remove"></span> Remover
+							</button>
+							<button type="button" class="btn btn-default" ng-click="saveDepartamento()">
 								<span class="glyphicon glyphicon-save"></span> Salvar
 							</button>
 						</div>
@@ -463,7 +542,7 @@
 							<div class="form-group">
 								<label>Departamento</label>
 								<select class="form-control" ng-model="departamentoSelecionado" 
-										ng-options="departamento.descricao for departamento in departamentoes">
+										ng-options="departamento.descricao for departamento in departamentos">
 								</select>
 							</div>
 						</form>
@@ -478,7 +557,7 @@
 		</div>
 		
 		<!--==Registros ============================================================================== -->
-		<div ng-conttroller="registroCtrl" ng-show="tela == 'teste'">
+		<div ng-conttroller="registroCtrl" ng-show="tela == 'registro'">
 			<form class="form-inline">
                 <div class="form-group">
                     <input type="text" class="form-control datepicker" placeholder="Data início"/>

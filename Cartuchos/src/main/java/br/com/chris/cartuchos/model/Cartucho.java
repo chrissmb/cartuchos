@@ -37,7 +37,7 @@ public class Cartucho {
 	}
 
 	public void setDescricao(String descricao) {
-		this.descricao = descricao;
+		this.descricao = descricao.toUpperCase();
 	}
 
 	public int getQuantidade() {

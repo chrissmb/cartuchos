@@ -39,12 +39,6 @@ public class CartuchoController {
 		return new ResponseEntity<>(dao.findOne(id), HttpStatus.OK);
 	}
 	
-	@GetMapping(params = "descricao")
-	public ResponseEntity<Cartucho> getCartuchoByDescricao(
-			@RequestParam(value="descricao") String descricao) {
-		return new ResponseEntity<>(dao.findByDescricao(descricao), HttpStatus.OK);
-	}
-	
 	@GetMapping(params = "descricaoStartingWith")
 	public ResponseEntity<List<Cartucho>> getCartuchoByDescricaoStartingWith(
 			@RequestParam(value="descricaoStartingWith") String descricao) {
@@ -55,13 +49,6 @@ public class CartuchoController {
 	public ResponseEntity<List<Cartucho>> getCartuchoByAtivoTrue() {
 		return new ResponseEntity<>(
 				dao.findByAtivoTrue(), HttpStatus.OK);
-	}
-		
-	@GetMapping(value = "ativo", params = "descricaoStartingWith")
-	public ResponseEntity<List<Cartucho>> getCartuchoByAtivoAndDescricaoStartingWith(
-			@RequestParam(value="descricaoStartingWith") String descricao) {
-		return new ResponseEntity<>(
-				dao.findByAtivoTrueAndDescricaoStartingWith(descricao), HttpStatus.OK);
 	}
 	
 	@PostMapping()
