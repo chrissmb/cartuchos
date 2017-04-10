@@ -25,6 +25,7 @@
 			$rootScope.cartuchos = [];
 
 			$rootScope.listaCartuchos = function() {
+				$rootScope.cartuchos = [];
 				$http.get("cartuchos")
 				.then(function(response) {
 					$rootScope.cartuchos = response.data;
@@ -36,6 +37,7 @@
 			$rootScope.departamentos = [];
 			
 			$rootScope.listaDepartamentos = function() {
+				$rootScope.departamentos = [];
 				$http.get("departamentos")
 				.then(function(response) {
 					$rootScope.departamentos = response.data;
@@ -183,7 +185,7 @@
 									'ng-options="depto_'+qtdForms+'.descricao for depto_'+qtdForms+' in departamentos">'+
 								'<option value="" disabled="true" selected="true">Departamento</option>'+
 							'</select>'+
-						'</div>' +
+						'</div> '+
 						'<div class="form-group">'+
 							'<input type="number" class="form-control" placeholder="Quantidade" '+
 									'min="1" ng-model="cartucho_'+qtdForms+'.entrada"/>'+
