@@ -1,0 +1,1 @@
+insert into departamento (id, descricao, ativo) values (null,'Cartuchos', true);

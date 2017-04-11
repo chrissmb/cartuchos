@@ -23,7 +23,10 @@
 
 		app.run(function($rootScope, $http) {
 			$rootScope.cartuchos = [];
-
+			$rootScope.departamentos = [];
+			
+			
+			
 			$rootScope.listaCartuchos = function() {
 				$rootScope.cartuchos = [];
 				$http.get("cartuchos")
@@ -33,8 +36,6 @@
 					alert("Falha\n" + reason.status + ": " + reason.statusText);
 				});
 			}
-
-			$rootScope.departamentos = [];
 			
 			$rootScope.listaDepartamentos = function() {
 				$rootScope.departamentos = [];
@@ -46,6 +47,18 @@
 				});
 			}
 			
+			$rootScope.listaRegistros = function() {
+        		console.log("carregando registros");
+        	}
+			
+			$rootScope.saveRegistro = function(registro) {
+				$http.post("registros", registro)
+				.then(function() {
+					return true;
+				}, function(reason) {
+					return false;
+				});
+			}
 		});
 		
 		app.controller('menuCtrl', function($scope, $rootScope, $http) {
@@ -69,6 +82,11 @@
 				$rootScope.listaRegistros();
 			}
 			
+			$scope.carregaSelects = function() {
+				$rootScope.listaCartuchos();
+				$rootScope.listaDepartamentos();
+			}
+						
 			$scope.telaInicio();
 		});
 		
@@ -168,53 +186,52 @@
 		});
 		
 		app.controller('estqEntradaCtrl', function($scope, $compile, $rootScope, $http) {
-			var qtdForms = 1;
+			$scope.forms = [];
+			$scope.forms.push({});
 			
 			$scope.addForm = function() {
-				qtdForms++;
-				$("#formsEntrada").append(
-					'<form class="form-inline"  id="formEntrada_'+qtdForms+'">'+
-						'<div class="form-group">'+
-							'<select class="form-control" ng-model="cartuchoSelecionado_'+qtdForms+
-                            '" ng-options="cartucho_'+qtdForms+'.descricao for cartucho_'+qtdForms+' in cartuchos">'+
-								'<option value="" disabled="true" selected="true">Cartucho</option>'+
-							'</select> '+
-						'</div> '+
-						'<div class="form-group">'+
-							'<select id="combobox" class="form-control" ng-model="deptoSelecionado_'+qtdForms+'"' +
-									'ng-options="depto_'+qtdForms+'.descricao for depto_'+qtdForms+' in departamentos">'+
-								'<option value="" disabled="true" selected="true">Departamento</option>'+
-							'</select>'+
-						'</div> '+
-						'<div class="form-group">'+
-							'<input type="number" class="form-control" placeholder="Quantidade" '+
-									'min="1" ng-model="cartucho_'+qtdForms+'.entrada"/>'+
-						'</div>'+
-					'</form>'
-				);
-				$compile("#formsEntrada")($scope);
+				$scope.forms.push({});
 			}
+			
 			
 			$scope.remForm = function() {
-				if (qtdForms > 0) {
-					$("#formEntrada_"+qtdForms).remove();
-					qtdForms--;
+				$scope.forms.pop();
+			}
+			
+			$scope.cleanForms = function() {
+				while ($scope.forms.length > 1) {
+					$scope.remForm();
 				}
 			}
 			
-			$scope.addTonersEstq = function() {
-				for (var i = 0; i < qtdForms; i++) {
-					$http.post($rootScope.url + "")
+			$scope.saveEntrada = function() {
+				var hoje = new Date().getTime();
+				var departamento = {id:1};
+				for (var i = 0; i < $scope.forms.length; i++) {
+					console.log($scope.forms[i].cartucho.descricao);
+					$scope.forms[i].departamento = departamento;
+					$scope.forms[i].data = hoje;
+					var salvou = $rootScope.saveRegistro($scope.forms[i]);
+					if (salvou) {
+						$scope.forms[i].pop();
+						i--;
+					} else {
+						$scope.forms[i].erro = "envio falhou";
+					}
 				}
 			}
+			
+			$('#modalEntrada').on('hidden.bs.modal', function () {
+				$scope.cleanForms();
+            })
 		});
 		
 		app.controller('estqSaidaCtrl', function($scope) {
 			
 		});
         
-        app.controller('registroCtrl', function($scope) {
-
+        app.controller('registroCtrl', function($scope) {     	
+        	
 		});
         
         $(function() {
@@ -259,9 +276,12 @@
 							<ul class="dropdown-menu">
 								<li>
 									<a href="#" data-toggle="modal" data-target="#modalEntrada" 
-											ng-click="chamaEstqEntrada()">Entrada</a>
+											ng-click="listaCartuchos()">Entrada</a>
 								</li>
-								<li><a href="#" data-toggle="modal" data-target="#modalSaida">Saída</a></li>
+								<li>
+									<a href="#" data-toggle="modal" data-target="#modalSaida"
+											ng-click="carregaSelects()">Saída</a>
+								</li>
 							</ul></li>
 						<li>
 							<a href="#" ng-click="telaRegistro()">
@@ -500,26 +520,21 @@
 						<h4 class="modal-title">Entrada no estoque</h4>
 					</div>
 					<div class="modal-body">
-						<div id="formsEntrada">
-							<form class="form-inline" id="formEntrada_1">
+						<div ng-repeat="form in forms">
+							<form class="form-inline">
 								<div class="form-group">
-									<select id="combobox" class="form-control" ng-model="cartuchoSelecionado_1" 
-											ng-options="cartucho_1.descricao for cartucho_1 in cartuchos">
+									<select id="combobox" class="form-control" ng-model="form.cartucho" 
+											ng-options="cartucho.descricao for cartucho in cartuchos">
 										<option value="" disabled="true" selected="true">Cartucho</option>
 									</select>
 								</div>
 								<div class="form-group">
-									<select id="combobox" class="form-control" ng-model="deptoSelecionado_1" 
-											ng-options="depto_1.descricao for depto_1 in departamentos">
-										<option value="" disabled="true" selected="true">Departamento</option>
-									</select>
-								</div>
-								<div class="form-group">
 									<input type="number" class="form-control" placeholder="Quantidade" 
-											min="1" ng-model="cartucho_1.quantidade"/>
+											min="1" ng-model="form.quantidade"/>
 								</div>
+								{{form.erro}}
 							</form>
-						</div>
+						</div>	
 						<button type="button" class="btn btn-default" ng-click="addForm()">
 							<span class="glyphicon glyphicon-plus"></span>
 						</button>
