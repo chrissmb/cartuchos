@@ -24,8 +24,7 @@
 		app.run(function($rootScope, $http) {
 			$rootScope.cartuchos = [];
 			$rootScope.departamentos = [];
-			
-			
+			$rootScope.registros = [];
 			
 			$rootScope.listaCartuchos = function() {
 				$rootScope.cartuchos = [];
@@ -48,17 +47,14 @@
 			}
 			
 			$rootScope.listaRegistros = function() {
-        		console.log("carregando registros");
+        		$http.get("registros")
+        		.then(function(response) {
+        			$rootScope.registros = response.data;
+        		}, function(reason) {
+        			alert("Falha\n" + reason.status + ": " + reason.statusText);
+        		})
         	}
 			
-			$rootScope.saveRegistro = function(registro) {
-				$http.post("registros", registro)
-				.then(function() {
-					return true;
-				}, function(reason) {
-					return false;
-				});
-			}
 		});
 		
 		app.controller('menuCtrl', function($scope, $rootScope, $http) {
@@ -91,7 +87,10 @@
 		});
 		
 		app.controller('inicioCtrl', function($scope, $rootScope, $http) {
-			
+			$scope.carregaSelects = function() {
+				$rootScope.listaCartuchos();
+				$rootScope.listaDepartamentos();
+			}
 		});
 		
 		app.controller('cartuchoCtrl', function($scope, $rootScope, $http) {
@@ -185,54 +184,86 @@
 			}
 		});
 		
-		app.controller('estqEntradaCtrl', function($scope, $compile, $rootScope, $http) {
-			$scope.forms = [];
-			$scope.forms.push({});
+		app.controller('estqEntradaCtrl', function($scope, $http, $rootScope) {
+			$('#modalEntrada').on('show.bs.modal', function () {
+				$scope.novaEntrada();
+            })
 			
-			$scope.addForm = function() {
-				$scope.forms.push({});
-			}
-			
-			
-			$scope.remForm = function() {
-				$scope.forms.pop();
-			}
-			
-			$scope.cleanForms = function() {
-				while ($scope.forms.length > 1) {
-					$scope.remForm();
-				}
+			$scope.novaEntrada = function() {
+				$scope.registro = {};
+				$scope.registro.quantidade = 1;
 			}
 			
 			$scope.saveEntrada = function() {
 				var hoje = new Date().getTime();
-				var departamento = {id:1};
-				for (var i = 0; i < $scope.forms.length; i++) {
-					console.log($scope.forms[i].cartucho.descricao);
-					$scope.forms[i].departamento = departamento;
-					$scope.forms[i].data = hoje;
-					var salvou = $rootScope.saveRegistro($scope.forms[i]);
-					if (salvou) {
-						$scope.forms[i].pop();
-						i--;
-					} else {
-						$scope.forms[i].erro = "envio falhou";
-					}
-				}
+				var departamento = {};
+				departamento.id = 1;
+				
+				$scope.registro.departamento = departamento;
+				$scope.registro.data = hoje;
+				$scope.registro.operacao = "ENTRADA";
+				
+				$http.post("registros", $scope.registro)
+				.then(function() {
+					$scope.fechaModalEntrada();
+				}, function(reason) {
+					alert("Falha\n" + reason.status + ": " + reason.statusText);
+				});
 			}
 			
-			$('#modalEntrada').on('hidden.bs.modal', function () {
-				$scope.cleanForms();
-            })
+			$scope.fechaModalEntrada = function() {
+				$rootScope.listaCartuchos();
+				$('#modalEntrada').modal('toggle');
+			}
+			
 		});
 		
-		app.controller('estqSaidaCtrl', function($scope) {
+		app.controller('estqSaidaCtrl', function($scope, $http, $rootScope) {
+			$('#modalSaida').on('show.bs.modal', function () {
+				$scope.novaEntrada();
+            })
+            
+            $scope.novaEntrada = function() {
+				$scope.registro = {};
+				$scope.registro.quantidade = 1;
+			}
 			
+			$scope.saveSaida = function() {
+				var hoje = new Date().getTime();
+				
+				$scope.registro.data = hoje;
+				$scope.registro.operacao = "SAIDA";
+				
+				$http.post("registros", $scope.registro)
+				.then(function() {
+					$scope.fechaModalSaida();
+				}, function(reason) {
+					alert("Falha\n" + reason.status + ": " + reason.statusText);
+				});
+			}
+			
+			$scope.fechaModalSaida = function() {
+				$rootScope.listaCartuchos();
+				$('#modalSaida').modal('toggle');
+			}
 		});
         
         app.controller('registroCtrl', function($scope) {     	
-        	
+        	$scope.de = new Date().toDateString();
+        	$scope.para = new Date().toDateString();
 		});
+        
+        app.filter("dateFilter", function() {
+            return function datefilter(items, from, to) {
+            var result = [];
+            angular.forEach(items, function(value){
+                if (Date.parse(value.data) > Date.parse(from) && Date.parse(to) > Date.parse(value.data))  {
+                    result.push(value);
+                 }
+             });
+             return result;
+             };
+         });
         
         $(function() {
             $(".datepicker").datepicker();
@@ -314,13 +345,13 @@
 			<form class="form-inline">
 				<div class="form-group">
 					<button type="button" class="btn btn-default" data-toggle="modal"
-							data-target="#modalEntrada">
+							data-target="#modalEntrada" ng-click="listaCartuchos()">
 						<span class="glyphicon glyphicon-plus"></span> Entrada
 					</button>
 				</div>
 				<div class="form-group">
 					<button type="button" class="btn btn-default" data-toggle="modal"
-							data-target="#modalSaida">
+							data-target="#modalSaida" ng-click="carregaSelects()">
 						<span class="glyphicon glyphicon-minus"></span> Saída
 					</button>
 				</div>
@@ -468,7 +499,7 @@
 								data-toggle="modal" data-target="#modalDepartamento" 
 								ng-click="loadDepartamento(departamento)">
 							<td>{{ departamento.descricao }}</td>
-							<td><input type="checkbox" ng-model="departamento.ativo" /></td>
+							<td><input type="checkbox" ng-model="departamento.ativo" disabled/></td>
 						</tr>
 					</tbody>
 				</table>
@@ -520,27 +551,20 @@
 						<h4 class="modal-title">Entrada no estoque</h4>
 					</div>
 					<div class="modal-body">
-						<div ng-repeat="form in forms">
-							<form class="form-inline">
-								<div class="form-group">
-									<select id="combobox" class="form-control" ng-model="form.cartucho" 
-											ng-options="cartucho.descricao for cartucho in cartuchos">
-										<option value="" disabled="true" selected="true">Cartucho</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<input type="number" class="form-control" placeholder="Quantidade" 
-											min="1" ng-model="form.quantidade"/>
-								</div>
-								{{form.erro}}
-							</form>
-						</div>	
-						<button type="button" class="btn btn-default" ng-click="addForm()">
-							<span class="glyphicon glyphicon-plus"></span>
-						</button>
-						<button type="button" class="btn btn-default" ng-click="remForm()">
-							<span class="glyphicon glyphicon-minus"></span>
-						</button>
+						<form>
+							<div class="form-group">
+								<lable>Cartucho</lable>
+								<select id="combobox" class="form-control" ng-model="registro.cartucho" 
+										ng-options="cartucho.descricao for cartucho in cartuchos">
+									<option value="" disabled selected>Selecione</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<lable>Quantidade</lable>
+								<input type="number" class="form-control" min="1" 
+										ng-model="registro.quantidade"/>
+							</div>
+						</form>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" ng-click="saveEntrada()">
@@ -563,24 +587,27 @@
 						<form>
 							<div class="form-group">
 								<label>Cartucho</label>
-								<select class="form-control" ng-model="cartuchoSelecionado" 
+								<select class="form-control" ng-model="registro.cartucho" 
 										ng-options="cartucho.descricao for cartucho in cartuchos">
+									<option value="" disabled selected>Selecione</option>
 								</select>
 							</div>
 							<div class="form-group">
 								<label>Quantidade</label>
-								<input type="number" class="form-control" min="1"/>
+								<input type="number" class="form-control" min="1" 
+										ng-model="registro.quantidade"/>
 							</div>
 							<div class="form-group">
 								<label>Departamento</label>
-								<select class="form-control" ng-model="departamentoSelecionado" 
+								<select class="form-control" ng-model="registro.departamento" 
 										ng-options="departamento.descricao for departamento in departamentos">
+									<option value="" disabled selected>Selecione</option>
 								</select>
 							</div>
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default">
+						<button type="button" class="btn btn-default" ng-click="saveSaida()">
 							<span class="glyphicon glyphicon-save"></span> Salvar
 						</button>
 					</div>
@@ -592,15 +619,15 @@
 		<div ng-conttroller="registroCtrl" ng-show="tela == 'registro'">
 			<form class="form-inline">
                 <div class="form-group">
-                    <input type="text" class="form-control datepicker" placeholder="Data início"/>
+                    <input type="text" class="form-control datepicker" placeholder="Data início" ng-model="de"/>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control datepicker" placeholder="Data fim"/>
+                    <input type="text" class="form-control datepicker" placeholder="Data fim" ng-model="para"/>
                 </div>
-                <button type="button" class="btn btn-default">
+                <!-- button type="button" class="btn btn-default">
                     <span class="glyphicon glyphicon-filter"></span> Filtrar
-                </button>
-                <button type="button" class="btn btn-default pull-right">
+                </button-->
+                <button type="button" class="btn btn-default pull-right" ng-click="listaRegistros()">
 				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
 			</button>
             </form>
@@ -610,30 +637,19 @@
 					<thead>
 						<tr>
 							<th>Data</th>
-							<th>Toner</th>
+							<th>Cartucho</th>
                             <th>Departamento</th>
+                            <th>Operação</th>
+                            <th>Quantidade</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="registro in registros">
-							<td>{{ registro.data }}</td>
-							<td>{{ registro.toner.descricao }}</td>
-                            <td>{{ registro.deparamento }}</td>
-						</tr>
-                        <tr>
-							<td>123</td>
-							<td>123</td>
-                            <td>123</td>
-						</tr>
-                        <tr>
-							<td>123</td>
-							<td>123</td>
-                            <td>123</td>
-						</tr>
-                        <tr>
-							<td>123</td>
-							<td>123</td>
-                            <td>123</td>
+						<tr ng-repeat="registro in registros | dateFilter:de:para">
+							<td>{{ registro.data | date : "dd/MM/y" }}</td>
+							<td>{{ registro.cartucho.descricao }}</td>
+                            <td>{{ registro.departamento.descricao }}</td>
+                            <td>{{ registro.operacao }}</td>
+                            <td>{{ registro.quantidade }}</td>
 						</tr>
 					</tbody>
 				</table>

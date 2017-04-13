@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.chris.cartuchos.model.Cartucho;
+import br.com.chris.cartuchos.model.CartuchoDao;
+import br.com.chris.cartuchos.model.Operacao;
 import br.com.chris.cartuchos.model.Registro;
 import br.com.chris.cartuchos.model.RegistroDao;
 
@@ -23,6 +26,9 @@ public class RegistroController {
 	
 	@Autowired
 	private RegistroDao dao;
+	
+	@Autowired
+	private CartuchoDao cartuchoDao;
 	
 	@GetMapping()
 	public ResponseEntity<List<Registro>> getAllRegistros() {
@@ -36,15 +42,30 @@ public class RegistroController {
 	
 	@PostMapping()
 	public ResponseEntity<Registro> addRegistro(@RequestBody Registro registro) {
+		Cartucho cartucho = cartuchoDao.findOne(registro.getCartucho().getId());
+		int qtdRegistro = registro.getQuantidade();
+		int qtdCartucho = cartucho.getQuantidade();
+		
+		if (registro.getOperacao().equals(Operacao.ENTRADA)) {
+			cartucho.setQuantidade(qtdCartucho + qtdRegistro);
+			cartuchoDao.save(cartucho);
+		} else {
+			if (qtdRegistro <= qtdCartucho) {
+				cartucho.setQuantidade(qtdCartucho - qtdRegistro);
+				cartuchoDao.save(cartucho);
+			} else {
+				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+			}
+		}
 		return new ResponseEntity<>(dao.save(registro), HttpStatus.OK);
 	}
 	
-	@PutMapping("/{id}")
+	/*@PutMapping("/{id}")
 	public ResponseEntity<Registro> updateRegistro(@RequestBody Registro registro,
 			@PathVariable Long id) {
 		registro.setId(id);
 		return new ResponseEntity<>(dao.save(registro), HttpStatus.OK);
-	}
+	}*/
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteRegistro(@PathVariable Long id) {

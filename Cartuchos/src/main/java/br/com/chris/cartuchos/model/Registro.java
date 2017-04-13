@@ -29,6 +29,9 @@ public class Registro {
 	
 	@NotNull
 	private Calendar data;
+	
+	@NotNull
+	private Operacao operacao;
 
 	public Long getId() {
 		return id;
@@ -68,5 +71,13 @@ public class Registro {
 
 	public void setData(Calendar data) {
 		this.data = data;
+	}
+
+	public Operacao getOperacao() {
+		return operacao;
+	}
+
+	public void setOperacao(Operacao operacao) {
+		this.operacao = operacao;
 	}
 }

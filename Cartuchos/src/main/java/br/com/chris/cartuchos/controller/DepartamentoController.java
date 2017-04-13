@@ -47,18 +47,26 @@ public class DepartamentoController {
 	
 	@PostMapping()
 	public ResponseEntity<Departamento> addDepartamento(@RequestBody Departamento departamento) {
+		if (departamento.getId() != null) {
+			if (departamento.getId() == 1)
+				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		}
 		return new ResponseEntity<>(dao.save(departamento), HttpStatus.OK);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Departamento> updateDepartamento(@RequestBody Departamento departamento, 
 			@PathVariable Long id) {
+		if (id == 1)
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		departamento.setId(id);
 		return new ResponseEntity<>(dao.save(departamento), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteDepartamento(@PathVariable Long id) {
+		if (id == 1)
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		dao.delete(dao.findOne(id));
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
