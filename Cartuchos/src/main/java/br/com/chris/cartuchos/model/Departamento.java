@@ -14,7 +14,7 @@ public class Departamento {
     @GeneratedValue
     private Long id;
     
-    @Size(min=3,max=20)
+    @Size(min=2,max=20)
 	@Column(unique=true)
     @NotNull
 	private String descricao;
