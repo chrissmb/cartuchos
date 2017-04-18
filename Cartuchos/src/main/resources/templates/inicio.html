@@ -249,24 +249,42 @@
 		});
         
         app.controller('registroCtrl', function($scope) {     	
-        	$scope.de = new Date().toDateString();
-        	$scope.para = new Date().toDateString();
+        	$scope.de = new Date().toLocaleDateString();
+        	$scope.para = new Date().toLocaleDateString();
+        	
+        	
+        	$scope.test2 = function() {
+        		var parts = $scope.de.split('/');
+        		var fromDate = new Date(parts[2], parts[1] - 1, parts[0]);
+        		console.log(fromDate);
+        	}
+        	
 		});
         
         app.filter("dateFilter", function() {
             return function datefilter(items, from, to) {
-            var result = [];
-            angular.forEach(items, function(value){
-                if (Date.parse(value.data) > Date.parse(from) && Date.parse(to) > Date.parse(value.data))  {
-                    result.push(value);
-                 }
-             });
-             return result;
+            	
+            	var parts = from.split('/');
+            	var fromDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            	
+            	parts = to.split('/');
+            	var toDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            	
+	            var result = [];
+	            angular.forEach(items, function(value){
+	            	var dataItem = new Date(value.data);
+	                if (dataItem >= fromDate && dataItem.getDate() <= toDate.getDate())  {
+	                    result.push(value);
+	                 }
+	             });
+	             return result;
              };
          });
         
         $(function() {
-            $(".datepicker").datepicker();
+            $(".datepicker").datepicker({
+            	dateFormat: 'dd/mm/yy'
+            });
         });
         
 	</script>
@@ -616,17 +634,17 @@
 		</div>
 		
 		<!--==Registros ============================================================================== -->
-		<div ng-conttroller="registroCtrl" ng-show="tela == 'registro'">
+		<div ng-controller="registroCtrl" ng-show="tela == 'registro'">
 			<form class="form-inline">
                 <div class="form-group">
-                    <input type="text" class="form-control datepicker" placeholder="Data início" ng-model="de"/>
+                    <input type="text" class="form-control datepicker" placeholder="Data início" ng-model="de"/>{{de}}
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control datepicker" placeholder="Data fim" ng-model="para"/>
+                    <input type="text" class="form-control datepicker" placeholder="Data fim" ng-model="para"/>{{para}}
                 </div>
-                <!-- button type="button" class="btn btn-default">
+                <button type="button" class="btn btn-default" ng-click="test2()">
                     <span class="glyphicon glyphicon-filter"></span> Filtrar
-                </button-->
+                </button>
                 <button type="button" class="btn btn-default pull-right" ng-click="listaRegistros()">
 				<span class="glyphicon glyphicon-refresh"></span> Atualizar tabela
 			</button>
