@@ -2,9 +2,45 @@
 <html>
 <head>
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Admin</title>
+
+<script th:src="@{/webjars/jquery/3.2.1/dist/jquery.min.js}"></script>
+<link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+<link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap-theme.min.css}"/>
+<script th:src="@{/webjars/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+
 </head>
 <body>
+	<div class="col-md-8 col-md-offset-2">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Usuários</h3>
+				<form>
+					<div class="form-group">
+						<button type="button" class="btn btn-default pull-right" data-toggle="modal"
+								data-target="#modalUsuario" ng-click="novoUsuario()">
+							<span class="glyphicon glyphicon-plus"></span> Cadastrar Usuário
+						</button>
+					</div>
+					<div class="form-group">
+						<button type="button" class="btn btn-default pull-right" data-toggle="modal"
+								data-target="#modalUsuario" ng-click="novoUsuario()">
+							<span class="glyphicon glyphicon-refresh"></span> Atualizar
+						</button>
+					</div>
+				</form>
+			</div>
+			<div class="panel-body">
+				<table class="table table-hover">
+					<thead>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 	
 </body>
 </html>

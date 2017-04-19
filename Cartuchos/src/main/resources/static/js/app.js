@@ -78,6 +78,7 @@ app.controller('inicioCtrl', function($scope, $rootScope, $http) {
 
 app.controller('cartuchoCtrl', function($scope, $rootScope, $http) {
 	$scope.saveCartucho = function() {
+				
 		if ($scope.cartucho.id == null) {
 			$scope.cartucho.ativo = true;
 			$http.post("cartuchos", $scope.cartucho)
