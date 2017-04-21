@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Usuario {
 	
@@ -20,8 +22,11 @@ public class Usuario {
 	@Size(min=3,max=10)
 	@NotNull
 	private String username;
+
+	private String senha;
 	
-	@Size(min=6,max=20)
+	@JsonIgnore
+	@Size(min=60,max=60)
 	@NotNull
 	private String password;
 	
@@ -44,7 +49,15 @@ public class Usuario {
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		this.username = username.toLowerCase();
+	}
+	
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 
 	public String getPassword() {

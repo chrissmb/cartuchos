@@ -246,41 +246,30 @@ app.controller('registroCtrl', function($scope) {
 	
 });
 
-app.controller('usuarioCtrl', function($scope, $rootScope) {     	
+app.controller('usuarioCtrl', function($scope, $rootScope, $http) {     	
 	$rootScope.listaUsuarios();
 	
 	$scope.novoUsuario = function() {
 		$scope.usuario = {};
+		$scope.usuario.username = "";
+		$scope.usuario.senha = "";
 		$scope.usuario.enabled = true;
 		$scope.usuario.role = "USER";
 	}
 	
 	$scope.loadUsuario = function(usuario) {
 		$scope.usuario = angular.copy(usuario);
-		$scope.usuario.password2 = $scope.usuario.password;
+		$scope.usuario.senha = "";
+		$scope.usuario.senha2 = "";
 	}
 	
 	$scope.fechaModalUsuario = function() {
 		$rootScope.listaUsuarios();
-		$scope.formUsuario.senha1.$setPristine();
-		$("#modalUsuario").toggle();
-	}
-	
-	$scope.validaSenha = function() {
-		var senha1 = $scope.usuario.password;
-		var senha2 = $scope.usuario.password2;
-		if (senha1 == senha2) {
-			return true;
-		} else {
-			alert("Senhas não correspondem.");
-			return false;
-		}
+		$("#modalUsuario").modal('toggle');
 	}
 	
 	$scope.saveUsuario = function() {
 		if ($scope.usuario.id == null) {
-			if (!$scope.validaSenha())
-				return;
 			$http.post("usuarios", $scope.usuario)
 			.then(function() {
 				$scope.fechaModalUsuario();
@@ -323,5 +312,10 @@ app.filter("dateFilter", function() {
 $(function() {
     $(".datepicker").datepicker({
     	dateFormat: 'dd/mm/yy'
+    });
+    
+    $('#username').on('keypress', function(e) {
+        if (e.which == 32)
+            return false;
     });
 });

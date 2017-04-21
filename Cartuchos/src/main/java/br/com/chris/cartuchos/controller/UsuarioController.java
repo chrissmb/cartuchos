@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,11 +32,6 @@ public class UsuarioController {
 		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
 	}
 	
-	@GetMapping("ativo")
-	public ResponseEntity<List<Usuario>> getAllUsuarioEnabledTrue() {
-		return new ResponseEntity<>(dao.findByEnabledTrue(), HttpStatus.OK);
-	}
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<Usuario> getUsuario(@PathVariable Long id) {
 		return new ResponseEntity<>(dao.findOne(id), HttpStatus.OK);
@@ -42,14 +39,25 @@ public class UsuarioController {
 	
 	@PostMapping
 	public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario usuario) {
+		if (usuario.getSenha().length() < 6)
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		usuario.setPassword(hashSenha(usuario.getSenha()));
+		usuario.setSenha("");
 		return new ResponseEntity<>(dao.save(usuario), HttpStatus.OK);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Usuario> updateUsuario(
 			@PathVariable Long id,
-			@RequestParam Usuario usuario) {
+			@RequestBody Usuario usuario) {
+		if (usuario.getSenha().length() < 6) {
+			Usuario usuarioDB = dao.findOne(id);
+			usuario.setPassword(usuarioDB.getPassword());
+		} else {
+			usuario.setPassword(hashSenha(usuario.getSenha()));
+		}
 		usuario.setId(id);
+		usuario.setSenha("");
 		return new ResponseEntity<>(dao.save(usuario), HttpStatus.OK);
 	}
 	
@@ -57,5 +65,10 @@ public class UsuarioController {
 	public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
 		dao.delete(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+	
+	private String hashSenha(String senha) {
+		PasswordEncoder encode = new BCryptPasswordEncoder();
+		return encode.encode(senha);
 	}
 }
