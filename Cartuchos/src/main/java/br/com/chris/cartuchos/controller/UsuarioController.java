@@ -19,7 +19,7 @@ import br.com.chris.cartuchos.model.Usuario;
 import br.com.chris.cartuchos.model.UsuarioDao;
 
 @RestController
-@RequestMapping("Usuarios")
+@RequestMapping("usuarios")
 public class UsuarioController {
 	
 	@Autowired
