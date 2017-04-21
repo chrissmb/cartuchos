@@ -2,12 +2,13 @@
  *  Framework: AngularJS
  */
 
-var app = angular.module('myApp', []);
+var app = angular.module('CartuchosApp', []);
 
 app.run(function($rootScope, $http) {
 	$rootScope.cartuchos = [];
 	$rootScope.departamentos = [];
 	$rootScope.registros = [];
+	$rootScope.usuarios = [];
 	
 	$rootScope.listaCartuchos = function() {
 		$rootScope.cartuchos = [];
@@ -38,6 +39,14 @@ app.run(function($rootScope, $http) {
 		})
 	}
 	
+	$rootScope.listaUsuarios = function() {
+		$http.get("usuarios")
+		.then(function(response) {
+			$rootScope.usuarios = response.data;
+		}, function(reason) {
+			alert("Falha\n" + reason.status + ": " + reason.statusText);
+		})
+	}
 });
 
 app.controller('menuCtrl', function($scope, $rootScope, $http) {
@@ -236,6 +245,10 @@ app.controller('registroCtrl', function($scope) {
 	$scope.de = new Date().toLocaleDateString();
 	$scope.para = new Date().toLocaleDateString();
 	
+});
+
+app.controller('usuarioCtrl', function($scope, $rootScope) {     	
+	$rootScope.listaUsuarios();
 });
 
 app.filter("dateFilter", function() {
