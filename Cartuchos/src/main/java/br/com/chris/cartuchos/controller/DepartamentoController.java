@@ -67,7 +67,7 @@ public class DepartamentoController {
 	public ResponseEntity<?> deleteDepartamento(@PathVariable Long id) {
 		if (id == 1)
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		dao.delete(dao.findOne(id));
+		dao.delete(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 

@@ -47,8 +47,7 @@ public class CartuchoController {
 	
 	@GetMapping("ativo")
 	public ResponseEntity<List<Cartucho>> getCartuchoByAtivoTrue() {
-		return new ResponseEntity<>(
-				dao.findByAtivoTrue(), HttpStatus.OK);
+		return new ResponseEntity<>(dao.findByAtivoTrue(), HttpStatus.OK);
 	}
 	
 	@PostMapping()
@@ -65,7 +64,7 @@ public class CartuchoController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteCartucho(@PathVariable Long id) {
-		dao.delete(dao.findOne(id));
+		dao.delete(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }
