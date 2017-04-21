@@ -31,8 +31,7 @@
 						</button>
 					</div> 
 					<div class="form-group  pull-right">
-						<button type="button" class="btn btn-default" data-toggle="modal"
-								data-target="#modalUsuario" ng-click="listaUsuarios()">
+						<button type="button" class="btn btn-default" ng-click="listaUsuarios()">
 							<span class="glyphicon glyphicon-refresh"></span> Atualizar
 						</button>
 					</div>
@@ -49,7 +48,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr ng-repeat="usuario in usuarios" ng-click="alteraUsuario(usuario)"
+							<tr ng-repeat="usuario in usuarios" ng-click="loadUsuario(usuario)"
 								data-toggle="modal" data-target="#modalUsuario">
 								<td>{{ usuario.username }}</td>
 								<td><input type="checkbox" ng-model="usuario.enabled" disabled/></td>
@@ -70,18 +69,21 @@
 					<h4 class="modal-title">Usuário</h4>
 				</div>
 				<div class="modal-body">
-					<form>
+					<form name="formUsuario">
 						<div class="form-group">
 							<label>Nome de Usuário</label>
-							<input type="text" class="form-control" ng-model="usuario.username"/>
+							<input type="text" class="form-control" ng-model="usuario.username" 
+									name="username" maxlength="10" ng-minlength="3" required/>
 						</div>
 						<div class="form-group">
 							<label>Senha</label>
-							<input type="password" class="form-control" ng-model="usuario.password"/>
+							<input type="password" name="senha1" class="form-control" 
+									ng-model="usuario.password" required/>
 						</div>
 						<div class="form-group">
 							<label>Confirmar senha</label>
-							<input type="password" class="form-control" ng-model="usuario.password2"/>
+							<input type="password" name="senha2" class="form-control" 
+									ng-model="usuario.password2"/>
 						</div>
 						<div class="form-group">
 							<lable>
@@ -92,14 +94,17 @@
 						<div class="form-group">
 							<lable>Grupo</lable>
 							<select class="form-control" ng-model="usuario.role">
-								<option value="USER" selected>Usuário</option>
+								<option value="USER">Usuário</option>
 								<option value="ADMIN">Administrador</option>
 							</select>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" ng-click="saveUsuario()">
+					<button type="button" class="btn btn-default" ng-click="saveUsuario()"
+							ng-disabled="usuario.password != usuario.password2 ||
+							formUsuario.username.$invalid ||
+							formUsuario.senha1.$invalid">
 						<span class="glyphicon glyphicon-save"></span> Salvar
 					</button>
 				</div>

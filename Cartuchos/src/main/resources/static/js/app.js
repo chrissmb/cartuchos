@@ -252,15 +252,50 @@ app.controller('usuarioCtrl', function($scope, $rootScope) {
 	$scope.novoUsuario = function() {
 		$scope.usuario = {};
 		$scope.usuario.enabled = true;
+		$scope.usuario.role = "USER";
 	}
 	
-	$scope.alteraUsuario = function(usuario) {
-		$scope.usuario = usuario;
+	$scope.loadUsuario = function(usuario) {
+		$scope.usuario = angular.copy(usuario);
+		$scope.usuario.password2 = $scope.usuario.password;
+	}
+	
+	$scope.fechaModalUsuario = function() {
+		$rootScope.listaUsuarios();
+		$scope.formUsuario.senha1.$setPristine();
+		$("#modalUsuario").toggle();
+	}
+	
+	$scope.validaSenha = function() {
+		var senha1 = $scope.usuario.password;
+		var senha2 = $scope.usuario.password2;
+		if (senha1 == senha2) {
+			return true;
+		} else {
+			alert("Senhas não correspondem.");
+			return false;
+		}
 	}
 	
 	$scope.saveUsuario = function() {
 		if ($scope.usuario.id == null) {
-			$http.post("usuario", )
+			if (!$scope.validaSenha())
+				return;
+			$http.post("usuarios", $scope.usuario)
+			.then(function() {
+				$scope.fechaModalUsuario();
+			}, function(reason) {
+				alert("Falha\n" + 
+						reason.status + ": " + reason.statusText);
+			});
+		} else {
+			$http.put("usuarios/" + $scope.usuario.id, 
+					$scope.usuario)
+			.then(function() {
+				$scope.fechaModalUsuario();
+			}, function(reason) {
+				alert("Falha\n" + reason.status + ": " + reason.statusText);
+			});
 		}
 	}
 });
