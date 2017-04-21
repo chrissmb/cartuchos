@@ -89,7 +89,6 @@ app.controller('cartuchoCtrl', function($scope, $rootScope, $http) {
 	$scope.saveCartucho = function() {
 				
 		if ($scope.cartucho.id == null) {
-			$scope.cartucho.ativo = true;
 			$http.post("cartuchos", $scope.cartucho)
 			.then(function() {
 				$scope.fechaModalCartucho();
@@ -249,6 +248,21 @@ app.controller('registroCtrl', function($scope) {
 
 app.controller('usuarioCtrl', function($scope, $rootScope) {     	
 	$rootScope.listaUsuarios();
+	
+	$scope.novoUsuario = function() {
+		$scope.usuario = {};
+		$scope.usuario.enabled = true;
+	}
+	
+	$scope.alteraUsuario = function(usuario) {
+		$scope.usuario = usuario;
+	}
+	
+	$scope.saveUsuario = function() {
+		if ($scope.usuario.id == null) {
+			$http.post("usuario", )
+		}
+	}
 });
 
 app.filter("dateFilter", function() {
