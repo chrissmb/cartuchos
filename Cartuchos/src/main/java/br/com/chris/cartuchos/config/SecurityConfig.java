@@ -45,8 +45,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 				.logoutSuccessUrl("/login")
 			.and()*/
 			.authorizeRequests()
-				.antMatchers("/**").hasAnyAuthority("USER")
-				.antMatchers("/admin/*").hasAuthority("ADMIN")
+				.antMatchers(
+						"/", 
+						"/cartuchos", 
+						"/departamentos", 
+						"/registros"
+						).hasAnyAuthority("USER", "ADMIN")
+				.antMatchers("/admin", "/usuarios").hasAuthority("ADMIN")
 				.anyRequest().authenticated()
 				.and()
 				.csrf().disable();
