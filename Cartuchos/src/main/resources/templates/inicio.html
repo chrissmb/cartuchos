@@ -75,7 +75,7 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" 
 									role="button" aria-haspopup="true" aria-expanded="false">
 								<span class="glyphicon glyphicon-user" aria-hidden="true"></span> 
-								<span th:text="${usuario}"></span> 
+								{{ usuarioLogado.username }} 
 								<span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu">
@@ -389,7 +389,7 @@
 					<tbody>
 						<tr ng-repeat="registro in registros | dateFilter:de:para">
 							<td>{{ registro.data | date : "dd/MM/y" }}</td>
-							<td>{{ registro.usuario }}</td>
+							<td>{{ registro.usuario.username }}</td>
 							<td>{{ registro.cartucho.descricao }}</td>
                             <td>{{ registro.departamento.descricao }}</td>
                             <td>{{ registro.operacao }}</td>

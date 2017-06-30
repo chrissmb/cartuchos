@@ -9,6 +9,7 @@ app.run(function($rootScope, $http) {
 	$rootScope.departamentos = [];
 	$rootScope.registros = [];
 	$rootScope.usuarios = [];
+	$rootScope.usuarioLogado = {};
 	
 	$rootScope.listaCartuchos = function() {
 		$rootScope.cartuchos = [];
@@ -36,7 +37,7 @@ app.run(function($rootScope, $http) {
 			$rootScope.registros = response.data;
 		}, function(reason) {
 			alert("Falha\n" + reason.status + ": " + reason.statusText);
-		})
+		});
 	}
 	
 	$rootScope.listaUsuarios = function() {
@@ -45,7 +46,16 @@ app.run(function($rootScope, $http) {
 			$rootScope.usuarios = response.data;
 		}, function(reason) {
 			alert("Falha\n" + reason.status + ": " + reason.statusText);
-		})
+		});
+	}
+	
+	$rootScope.bucaUsuarioLogado = function() {
+		$http.get("usuarios/logado")
+		.then(function(response) {
+			$rootScope.usuarioLogado = response.data;
+		}, function(reason) {
+			alert("Falha\n" + reason.status + ": " + reason.statusText);
+		});
 	}
 });
 
@@ -76,6 +86,7 @@ app.controller('menuCtrl', function($scope, $rootScope, $http) {
 	}
 				
 	$scope.telaInicio();
+	$rootScope.bucaUsuarioLogado();
 });
 
 app.controller('inicioCtrl', function($scope, $rootScope, $http) {
@@ -190,11 +201,12 @@ app.controller('estqEntradaCtrl', function($scope, $http, $rootScope) {
 		var hoje = new Date().getTime();
 		var departamento = {};
 		departamento.id = 1;
+		$rootScope.bucaUsuarioLogado();
 		
 		$scope.registro.departamento = departamento;
 		$scope.registro.data = hoje;
 		$scope.registro.operacao = "ENTRADA";
-		$scope.registro.usuario = "fulano";
+		$scope.registro.usuario = $rootScope.usuarioLogado;
 		
 		$http.post("registros", $scope.registro)
 		.then(function() {
@@ -223,9 +235,11 @@ app.controller('estqSaidaCtrl', function($scope, $http, $rootScope) {
 	
 	$scope.saveSaida = function() {
 		var hoje = new Date().getTime();
+		$rootScope.bucaUsuarioLogado();
 		
 		$scope.registro.data = hoje;
 		$scope.registro.operacao = "SAIDA";
+		$scope.registro.usuario = $rootScope.usuarioLogado;
 		
 		$http.post("registros", $scope.registro)
 		.then(function() {
