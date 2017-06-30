@@ -194,6 +194,7 @@ app.controller('estqEntradaCtrl', function($scope, $http, $rootScope) {
 		$scope.registro.departamento = departamento;
 		$scope.registro.data = hoje;
 		$scope.registro.operacao = "ENTRADA";
+		$scope.registro.usuario = "fulano";
 		
 		$http.post("registros", $scope.registro)
 		.then(function() {

@@ -12,8 +12,7 @@ public class HomeController {
 	
 	@RequestMapping("/")
 	public String inicio(Model model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		UserDetails usuario = (UserDetails) auth.getPrincipal();
+		UserDetails usuario = this.getUsuarioLogado();
 		model.addAttribute("usuario", usuario.getUsername());
 		String grupo = usuario.getAuthorities().toString();
 		if (grupo.equals("[ADMIN]"))
@@ -25,5 +24,10 @@ public class HomeController {
 	public String admin() {
 		
 		return "admin";
+	}
+	
+	private UserDetails getUsuarioLogado() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		return (UserDetails) auth.getPrincipal();
 	}
 }

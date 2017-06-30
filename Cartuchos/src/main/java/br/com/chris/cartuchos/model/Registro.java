@@ -32,6 +32,10 @@ public class Registro {
 	
 	@NotNull
 	private Operacao operacao;
+	
+	@NotNull
+	@ManyToOne
+	private Usuario usuario;
 
 	public Long getId() {
 		return id;
@@ -79,5 +83,13 @@ public class Registro {
 
 	public void setOperacao(Operacao operacao) {
 		this.operacao = operacao;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 }

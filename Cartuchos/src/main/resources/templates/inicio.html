@@ -379,6 +379,7 @@
 					<thead>
 						<tr>
 							<th>Data</th>
+							<th>Usuário</th>
 							<th>Cartucho</th>
                             <th>Departamento</th>
                             <th>Operação</th>
@@ -388,6 +389,7 @@
 					<tbody>
 						<tr ng-repeat="registro in registros | dateFilter:de:para">
 							<td>{{ registro.data | date : "dd/MM/y" }}</td>
+							<td>{{ registro.usuario }}</td>
 							<td>{{ registro.cartucho.descricao }}</td>
                             <td>{{ registro.departamento.descricao }}</td>
                             <td>{{ registro.operacao }}</td>
