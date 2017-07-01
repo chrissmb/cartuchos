@@ -388,7 +388,7 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="registro in registros | dateFilter:de:para">
-							<td>{{ registro.data | date : "dd/MM/y" }}</td>
+							<td>{{ registro.data | date : "dd/MM/yyyy HH:mm:ss"}}</td>
 							<td>{{ registro.usuario.username }}</td>
 							<td>{{ registro.cartucho.descricao }}</td>
                             <td>{{ registro.departamento.descricao }}</td>

@@ -1,0 +1,55 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script>
+    var app = angular.module('CartuchosApp', ['base64']);
+    
+    /*app.config(function($httpProvider, $base64) {
+        var auth = $base64.encode("admin:111111");
+        $httpProvider.defaults.headers.common['Authorization'] = 'Basic ' + auth;
+    })*/
+    
+    app.run(function($rootScope, $http) {
+        $rootScope.usuarios = [];
+        
+        $rootScope.qwe = "qweqweqweqweqw";
+        
+        $rootScope.listaUsuarios = function() {
+            $http.get("http://127.0.0.1:8080/usuarios")
+            .then(function(response) {
+                $rootScope.usuarios = response.data;
+            }, function(reason) {
+                alert("Falha\n" + reason.status + ": " + reason.statusText);
+            });
+        }
+    });
+    
+    app.controller('myCtrl', function($scope) {
+        $scope.asd = "asdasdasd";
+    });
+</script>
+</head>
+
+<body>
+<div ng-app="CartuchosApp" ng-controller="myCtrl">
+{{ qwe }}
+{{ asd }}
+<table>
+    <thead>
+        <tr>
+            <th>Usuário</th>
+            <th>Habilitado</th>
+            <th>Grupo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="usuario in usuarios">
+            <td>{{ usuario.username }}</td>
+            <td><input type="checkbox" ng-model="usuario.enabled" disabled/></td>
+            <td>{{ usuario.role }}</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</body>
+</html>
