@@ -57,6 +57,12 @@ app.run(function($rootScope, $http) {
 			alert("Falha\n" + reason.status + ": " + reason.statusText);
 		});
 	}
+	
+	$rootScope.limpaSenha = function() {
+		$rootScope.usuarioLogado.senha = "";
+		$rootScope.usuarioLogado.senha2 = "";
+		$rootScope.usuarioLogado.senhaAtual = "";
+	}
 });
 
 app.controller('menuCtrl', function($scope, $rootScope, $http) {
@@ -301,6 +307,21 @@ app.controller('usuarioCtrl', function($scope, $rootScope, $http) {
 				alert("Falha\n" + reason.status + ": " + reason.statusText);
 			});
 		}
+	}
+});
+
+app.controller('senhaCtrl', function($scope, $rootScope, $http) {
+	$scope.alteraSenha = function() {
+		$http.put("usuarios/logado", $rootScope.usuarioLogado)
+		.then(function() {
+			$scope.fechaModalSenha();
+		}, function(reason) {
+			alert("Falha\n" + reason.status + ": " + reason.statusText);
+		});
+	}
+	
+	$scope.fechaModalSenha = function() {
+		$("#modalSenha").modal('toggle');
 	}
 });
 

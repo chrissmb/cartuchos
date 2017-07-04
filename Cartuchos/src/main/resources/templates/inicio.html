@@ -74,12 +74,17 @@
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" 
 									role="button" aria-haspopup="true" aria-expanded="false">
-								<span class="glyphicon glyphicon-user" aria-hidden="true"></span> 
-								{{ usuarioLogado.username }} 
+								<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+								{{ usuarioLogado.username }}
 								<span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu">
-								<li><a href="#">Alterar senha</a></li>
+								<li>
+									<a href="#" data-toggle="modal" data-target="#modalSenha"
+											ng-click="limpaSenha()">
+										Alterar senha
+									</a>
+								</li>
 								<li><a href="logout">Logout</a></li>
 							</ul></li>
 					</ul>
@@ -399,6 +404,40 @@
 				</table>
 			</div>
             
+		</div>
+		
+		<!--==Altera Senha============================================================================= -->
+		<div id="modalSenha" class="modal fade" role="dialog" ng-controller="senhaCtrl">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Alterar Senha</h4>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<lable>Senha atual</lable>
+								<input type="password" class="form-control" ng-model="usuarioLogado.senhaAtual" maxlength="20"/>
+							</div>
+							<div class="form-group">
+								<lable>Nova senha</lable>
+								<input type="password" class="form-control" ng-model="usuarioLogado.senha" maxlength="20"/>
+							</div>
+							<div class="form-group">
+								<lable>Confirmar senha</lable>
+								<input type="password" class="form-control" ng-model="usuarioLogado.senha2" maxlength="20"/>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" ng-click="alteraSenha()" 
+								ng-disabled="usuarioLogado.senha != usuarioLogado.senha2 || usuarioLogado.senha.length < 6">
+							<span class="glyphicon glyphicon-save"></span> Alterar
+						</button>
+					</div>
+				</div>
+			</div>
 		</div>
 
 	</div>

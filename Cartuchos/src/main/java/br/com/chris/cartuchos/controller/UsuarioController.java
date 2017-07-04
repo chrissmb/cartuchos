@@ -46,6 +46,23 @@ public class UsuarioController {
 		return new ResponseEntity<>(dao.findByUsername(usuario.getUsername()), HttpStatus.OK);
 	}
 	
+	@PutMapping("/logado")
+	public ResponseEntity<Usuario> alteraSenha(@RequestBody Usuario usuario) {
+		if (usuario.getSenha().length() < 6)
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		
+		Usuario usuarioDB = dao.findOne(usuario.getId());
+		String hashSenhaAtual = hashSenha(usuario.getSenhaAtual());
+		boolean eSenhaAtualValida = hashSenhaAtual.equals(usuario.getPassword());
+		if (!eSenhaAtualValida)
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+		
+		usuario.setPassword(hashSenha(usuario.getSenha()));
+		usuario.setSenha("");
+		usuario.setSenhaAtual("");
+		return new ResponseEntity<>(dao.save(usuario), HttpStatus.OK);
+	}
+	
 	@PostMapping
 	public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario usuario) {
 		if (usuario.getSenha().length() < 6)

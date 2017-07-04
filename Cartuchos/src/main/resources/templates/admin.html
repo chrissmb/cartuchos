@@ -88,7 +88,7 @@
 						<div class="form-group">
 							<label>Confirmar senha</label>
 							<input type="password" name="senha2" class="form-control" 
-									ng-model="usuario.senha2"/>
+									ng-model="usuario.senha2" maxlength="20"/>
 						</div>
 						<div class="form-group">
 							<lable>
@@ -117,7 +117,7 @@
 							ng-show="usuario.id != null" 
 							ng-disabled="usuario.senha != usuario.senha2 ||
 							formUsuario.username.$invalid ||
-							usuario.senha.length < 6 && usuario.senha.length > 0 ">
+							usuario.senha.length < 6 && usuario.senha.length > 0">
 						<span class="glyphicon glyphicon-save"></span> Alterar
 					</button>
 				</div>

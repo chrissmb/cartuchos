@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -22,8 +23,12 @@ public class Usuario {
 	@Size(min=3,max=10)
 	@NotNull
 	private String username;
-
+	
+	@Transient // ignora persistencia
 	private String senha;
+	
+	@Transient // ignora persistencia
+	private String senhaAtual;
 	
 	@JsonIgnore
 	@Size(min=60,max=60)
@@ -58,6 +63,14 @@ public class Usuario {
 
 	public void setSenha(String senha) {
 		this.senha = senha;
+	}
+
+	public String getSenhaAtual() {
+		return senhaAtual;
+	}
+
+	public void setSenhaAtual(String senhaAtual) {
+		this.senhaAtual = senhaAtual;
 	}
 
 	public String getPassword() {
