@@ -316,7 +316,13 @@ app.controller('senhaCtrl', function($scope, $rootScope, $http) {
 		.then(function() {
 			$scope.fechaModalSenha();
 		}, function(reason) {
-			alert("Falha\n" + reason.status + ": " + reason.statusText);
+			if (reason.status == 401) {
+				alert("Senha atual incorreta.");
+			} else if (reason.status == 406) {
+				alert("Nova senha não atende aos requisitos de segurança.");
+			} else {
+				alert("Falha\n" + reason.status + ": " + reason.statusText);
+			}
 		});
 	}
 	

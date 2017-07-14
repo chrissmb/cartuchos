@@ -30,6 +30,8 @@ public class UsuarioController {
 	@Autowired
 	UsuarioDao dao;
 	
+	private static int senhaTamanhoMin = 6;
+	
 	@GetMapping
 	public ResponseEntity<List<Usuario>> getAllUsuario() {
 		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
@@ -48,15 +50,14 @@ public class UsuarioController {
 	
 	@PutMapping("/logado")
 	public ResponseEntity<Usuario> alteraSenha(@RequestBody Usuario usuario) {
-		if (usuario.getSenha().length() < 6)
+		if (usuario.getSenha().length() < senhaTamanhoMin)
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		
 		Usuario usuarioDB = dao.findOne(usuario.getId());
-		String hashSenhaAtual = hashSenha(usuario.getSenhaAtual());
-		boolean eSenhaAtualValida = hashSenhaAtual.equals(usuario.getPassword());
-		if (!eSenhaAtualValida)
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		
+		boolean eSenhaAtualValida = validaHash(usuario.getSenhaAtual(), usuarioDB.getPassword());
+		if (!eSenhaAtualValida) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
 		usuario.setPassword(hashSenha(usuario.getSenha()));
 		usuario.setSenha("");
 		usuario.setSenhaAtual("");
@@ -65,7 +66,7 @@ public class UsuarioController {
 	
 	@PostMapping
 	public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario usuario) {
-		if (usuario.getSenha().length() < 6)
+		if (usuario.getSenha().length() < senhaTamanhoMin)
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		usuario.setPassword(hashSenha(usuario.getSenha()));
 		usuario.setSenha("");
@@ -76,7 +77,7 @@ public class UsuarioController {
 	public ResponseEntity<Usuario> updateUsuario(
 			@PathVariable Long id,
 			@RequestBody Usuario usuario) {
-		if (usuario.getSenha().length() < 6) {
+		if (usuario.getSenha().length() < senhaTamanhoMin) {
 			Usuario usuarioDB = dao.findOne(id);
 			usuario.setPassword(usuarioDB.getPassword());
 		} else {
@@ -94,8 +95,13 @@ public class UsuarioController {
 	}
 	
 	private String hashSenha(String senha) {
-		PasswordEncoder encode = new BCryptPasswordEncoder();
-		return encode.encode(senha);
+		PasswordEncoder bCrypt = new BCryptPasswordEncoder();
+		return bCrypt.encode(senha);
+	}
+	
+	private boolean validaHash(String senha, String hash) {
+		PasswordEncoder bCrypt = new BCryptPasswordEncoder();
+		return bCrypt.matches(senha, hash);
 	}
 	
 	private UserDetails getUsuarioLogado() {
