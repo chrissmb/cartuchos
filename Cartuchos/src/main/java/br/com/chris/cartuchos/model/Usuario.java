@@ -25,10 +25,10 @@ public class Usuario {
 	private String username;
 	
 	@Transient // ignora persistencia
-	private String senha;
+	private String senha; //Utilizado para enviar senha em texto plano por REST.
 	
 	@Transient // ignora persistencia
-	private String senhaAtual;
+	private String senhaAtual;//Utilizado na mudança da senha para validar senha atual.
 	
 	@JsonIgnore
 	@Size(min=60,max=60)
