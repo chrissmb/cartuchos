@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeController {
@@ -24,6 +25,17 @@ public class HomeController {
 	public String admin() {
 		
 		return "admin";
+	}
+	
+	@RequestMapping("/login")
+	public String login() {
+		return "login";
+	}
+	
+	@RequestMapping("/loginError")
+	public String login(Model modelo) {
+		modelo.addAttribute("loginError", true);
+		return "login";
 	}
 	
 	private UserDetails getUsuarioLogado() {

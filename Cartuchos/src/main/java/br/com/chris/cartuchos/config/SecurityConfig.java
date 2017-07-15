@@ -39,20 +39,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http
-			.formLogin().and()/*.loginPage("/login").permitAll()
-			.failureUrl("/login?erro=true")
+			.formLogin().loginPage("/login").permitAll()
+			.failureUrl("/loginError")
 			.and()
-			.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+			/*.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 				.logoutSuccessUrl("/login")
 			.and()*/
 			.authorizeRequests()
 				.antMatchers(
 						"/usuarios/logado",
-						"/cartuchos", "/cartuchos/*"
-						).hasAnyAuthority("USER", "ADMIN")
+						"/cartuchos", 
+						"/cartuchos/*")
+					.hasAnyAuthority("USER", "ADMIN")
 				.antMatchers(
-						"/admin", "/usuarios","/usuarios/*"
-						).hasAuthority("ADMIN")
+						"/admin", 
+						"/usuarios",
+						"/usuarios/*")
+					.hasAuthority("ADMIN")
+				.antMatchers(
+						"/webjars/**",
+						"/js/**")
+					.permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.httpBasic() //Libera autenticação basica (funciona no Postman)
