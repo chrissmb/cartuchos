@@ -52,6 +52,16 @@ public class CartuchoController {
 	
 	@PostMapping()
 	public ResponseEntity<Cartucho> addCartucho(@RequestBody Cartucho cartucho) {
+		if (cartucho.getId() == null) {
+			cartucho.setQuantidade(0);
+			return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
+		}
+		Cartucho cartuchoDb = dao.findOne(cartucho.getId());
+		if (cartuchoDb != null) {
+			cartucho.setQuantidade(cartuchoDb.getQuantidade());
+		} else {
+			cartucho.setQuantidade(0);
+		}
 		return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
 	}
 	
@@ -59,6 +69,12 @@ public class CartuchoController {
 	public ResponseEntity<Cartucho> updateCartucho(@RequestBody Cartucho cartucho, 
 			@PathVariable Long id) {
 		cartucho.setId(id);
+		Cartucho cartuchoDb = dao.findOne(id);
+		if (cartuchoDb != null) {
+			cartucho.setQuantidade(cartuchoDb.getQuantidade());
+		} else {
+			cartucho.setQuantidade(0);
+		}		
 		return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
 	}
 	
