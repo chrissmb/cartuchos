@@ -30,7 +30,10 @@
 	</div>
 </div>
 <br>
-<p th:if='${loginError}' class="text-danger ">Usuario ou senha incorretos</p>
+<div class="col-md-4 col-md-offset-4 col-xs-8 col-xs-offset-2">
+	<p th:if='${loginError}' class="alert alert-danger">Usuario ou senha incorretos</p>
+</div>
+
 
 </body>
 </html>
