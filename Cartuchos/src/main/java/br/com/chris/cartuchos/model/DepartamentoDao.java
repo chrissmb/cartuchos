@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface DepartamentoDao extends JpaRepository<Departamento, Long> {
 	
 	Departamento findByDescricao(String descricao);
+	List<Departamento> findByAtivo(Boolean ativo);
 }

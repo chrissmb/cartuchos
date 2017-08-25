@@ -33,6 +33,11 @@ public class DepartamentoController {
 	private DepartamentoDao dao;
 	
 	@GetMapping()
+	public ResponseEntity<List<Departamento>> getDepartamentosAtivos() {
+		return new ResponseEntity<>(dao.findByAtivo(true), HttpStatus.OK);
+	}
+	
+	@GetMapping("/all")
 	public ResponseEntity<List<Departamento>> getAllDepartamento() {
 		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
 	}
