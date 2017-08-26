@@ -47,10 +47,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 				.logoutSuccessUrl("/login")
 			.and()*/
 			.authorizeRequests()
+				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.antMatchers(
 						"/usuarios/logado",
 						"/cartuchos", 
-						"/cartuchos/*")
+						"/cartuchos/*",
+						"/departamentos",
+						"/departamentos/*")
 					.hasAnyAuthority("USER", "ADMIN")
 				.antMatchers(
 						"/admin", 
@@ -61,7 +64,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 						"/webjars/**",
 						"/js/**")
 					.permitAll()
-					.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.httpBasic() //Libera autenticação basica (funciona no Postman)
