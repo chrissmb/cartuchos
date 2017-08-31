@@ -32,6 +32,11 @@ public class CartuchoController {
 	private CartuchoDao dao;
 	
 	@GetMapping()
+	public ResponseEntity<List<Cartucho>> getCartuchosAtivos() {
+		return new ResponseEntity<>(dao.findByAtivoTrue(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/all")
 	public ResponseEntity<List<Cartucho>> getAllCartuchos() {
 		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
 	}
