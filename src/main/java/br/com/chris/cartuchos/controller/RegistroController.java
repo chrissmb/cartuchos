@@ -1,5 +1,6 @@
 package br.com.chris.cartuchos.controller;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.chris.cartuchos.model.Cartucho;
 import br.com.chris.cartuchos.model.CartuchoDao;
+import br.com.chris.cartuchos.model.Departamento;
 import br.com.chris.cartuchos.model.Operacao;
 import br.com.chris.cartuchos.model.Registro;
 import br.com.chris.cartuchos.model.RegistroDao;
@@ -50,6 +52,8 @@ public class RegistroController {
 		
 		if (registro.getOperacao().equals(Operacao.ENTRADA)) {
 			cartucho.setQuantidade(qtdCartucho + qtdRegistro);
+			registro.setDepartamento(new Departamento());
+			registro.getDepartamento().setId(1L);
 			cartuchoDao.save(cartucho);
 		} else {
 			if (qtdRegistro <= qtdCartucho) {
@@ -59,6 +63,7 @@ public class RegistroController {
 				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 			}
 		}
+		registro.setData(Calendar.getInstance());
 		return new ResponseEntity<>(dao.save(registro), HttpStatus.OK);
 	}
 	
