@@ -4,6 +4,10 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.chris.cartuchos.model.Cartucho;
@@ -37,6 +42,28 @@ public class RegistroController {
 	@GetMapping()
 	public ResponseEntity<List<Registro>> getAllRegistros() {
 		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/pageable")
+	public ResponseEntity<Page<Registro>> getAllRegistrosPageable(
+			Pageable pageable,
+			@RequestParam(name = "dtinicio", required = false)
+		    @DateTimeFormat(iso = ISO.DATE)
+		    Calendar dataInicio,
+		    @RequestParam(name = "dtfim", required = false)
+		    @DateTimeFormat(iso = ISO.DATE)
+		    Calendar dataFim
+			) {
+		if (dataInicio != null && dataFim != null) {
+			dataInicio.set(Calendar.HOUR_OF_DAY, 0);
+			dataInicio.set(Calendar.MINUTE, 0);
+			dataInicio.set(Calendar.SECOND, 0);
+			dataFim.set(Calendar.HOUR_OF_DAY, 23);
+			dataFim.set(Calendar.MINUTE, 59);
+			dataFim.set(Calendar.SECOND, 59);
+			return new ResponseEntity<>(dao.findByDataBetween(dataInicio, dataFim, pageable), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(dao.findAll(pageable), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
