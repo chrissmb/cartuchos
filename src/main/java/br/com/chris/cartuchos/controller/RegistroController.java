@@ -48,10 +48,10 @@ public class RegistroController {
 	public ResponseEntity<Page<Registro>> getAllRegistrosPageable(
 			Pageable pageable,
 			@RequestParam(name = "dtinicio", required = false)
-		    @DateTimeFormat(iso = ISO.DATE)
+		    @DateTimeFormat(pattern = "dd-MM-yyyy")
 		    Calendar dataInicio,
 		    @RequestParam(name = "dtfim", required = false)
-		    @DateTimeFormat(iso = ISO.DATE)
+		    @DateTimeFormat(pattern = "dd-MM-yyyy")
 		    Calendar dataFim
 			) {
 		if (dataInicio != null && dataFim != null) {
