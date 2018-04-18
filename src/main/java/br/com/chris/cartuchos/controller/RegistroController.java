@@ -74,6 +74,8 @@ public class RegistroController {
 	@PostMapping()
 	public ResponseEntity<Registro> addRegistro(@RequestBody Registro registro) {
 		Cartucho cartucho = cartuchoDao.findOne(registro.getCartucho().getId());
+		if (cartucho == null)
+			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		int qtdRegistro = registro.getQuantidade();
 		int qtdCartucho = cartucho.getQuantidade();
 		
@@ -83,6 +85,10 @@ public class RegistroController {
 			registro.getDepartamento().setId(1L);
 			cartuchoDao.save(cartucho);
 		} else {
+			if (registro.getDepartamento() == null)
+				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+			if (registro.getDepartamento().getId() == 1L)
+				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 			if (qtdRegistro <= qtdCartucho) {
 				cartucho.setQuantidade(qtdCartucho - qtdRegistro);
 				cartuchoDao.save(cartucho);
@@ -91,7 +97,7 @@ public class RegistroController {
 			}
 		}
 		registro.setData(Calendar.getInstance());
-		return new ResponseEntity<>(dao.save(registro), HttpStatus.OK);
+		return new ResponseEntity<>(dao.save(registro), HttpStatus.CREATED);
 	}
 	
 	/*@PutMapping("/{id}")
