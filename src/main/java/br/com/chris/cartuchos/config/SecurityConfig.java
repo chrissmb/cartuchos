@@ -7,10 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 				.authoritiesByUsernameQuery(
 						"select username, role from usuario where username = ?");
 			/*.inMemoryAuthentication()
-				.withUser("chris").password("123").roles("USER")
+				.withUser("chris").password("123456").roles("USER")
 				.and()
 				.withUser("admin").password("321").roles("ADMIN");*/
 	}
@@ -40,6 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http
+			.csrf().disable()
 			.formLogin().loginPage("/login").permitAll()
 			.failureUrl("/loginError")
 			.and()
@@ -65,11 +67,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 						"/webjars/**",
 						"/js/**")
 					.permitAll()
+				.antMatchers(HttpMethod.POST, "/xlogin").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.httpBasic() //Libera autenticação basica (funciona no Postman)
 				.and()
-				.csrf().disable();
+				// filtra requisições de login
+				.addFilterBefore(new JWTLoginFilter("/xlogin", authenticationManager()),
+		                UsernamePasswordAuthenticationFilter.class)
+				
+				// filtra outras requisições para verificar a presença do JWT no header
+				.addFilterBefore(new JWTAuthenticationFilter(),
+		                UsernamePasswordAuthenticationFilter.class);
 	}
+	
+	/* @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.debug(true);
+    } */
 	
 }

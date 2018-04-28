@@ -11,6 +11,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 public class Usuario {
@@ -30,7 +32,8 @@ public class Usuario {
 	@Transient // ignora persistencia
 	private String senhaAtual;//Utilizado na mudança da senha para validar senha atual.
 	
-	@JsonIgnore
+	// @JsonIgnore
+	@JsonProperty(access = Access.WRITE_ONLY)
 	@Size(min=60,max=60)
 	@NotNull
 	private String password;
