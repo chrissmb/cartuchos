@@ -55,15 +55,21 @@ public class UsuarioController {
 		if (usuario.getSenha().length() < senhaTamanhoMin)
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		
-		Usuario usuarioDB = dao.findOne(usuario.getId());
+		UserDetails usuario = this.getUsuarioLogado();
+		Usuario usuarioDB = dao.findByUsername(usuario.getUsername());
+		
+		if(!usuarioDB) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		
 		boolean eSenhaAtualValida = validaHash(usuario.getSenhaAtual(), usuarioDB.getPassword());
 		if (!eSenhaAtualValida) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
-		usuario.setPassword(hashSenha(usuario.getSenha()));
-		usuario.setSenha("");
-		usuario.setSenhaAtual("");
-		return new ResponseEntity<>(dao.save(usuario), HttpStatus.OK);
+		usuarioDB.setPassword(hashSenha(usuario.getSenha()));
+		usuarioDB.setSenha("");
+		usuarioDB.setSenhaAtual("");
+		return new ResponseEntity<>(dao.save(usuarioDB), HttpStatus.OK);
 	}
 	
 	@PostMapping
