@@ -55,8 +55,8 @@ public class UsuarioController {
 		if (usuario.getSenha().length() < senhaTamanhoMin)
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		
-		UserDetails usuario = this.getUsuarioLogado();
-		Usuario usuarioDB = dao.findByUsername(usuario.getUsername());
+		UserDetails usr = this.getUsuarioLogado();
+		Usuario usuarioDB = dao.findByUsername(usr.getUsername());
 		
 		if(!usuarioDB) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
