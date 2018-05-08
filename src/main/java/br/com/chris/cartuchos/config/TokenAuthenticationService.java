@@ -42,11 +42,17 @@ public class TokenAuthenticationService {
 		String token = request.getHeader(HEADER_STRING);
 		
 		if (token != null) {
-			String user = Jwts.parser()
-					.setSigningKey(SECRET)
-					.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-					.getBody()
-					.getSubject();
+			String user;
+			try {
+				user = Jwts.parser()
+						.setSigningKey(SECRET)
+						.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+						.getBody()
+						.getSubject();
+				
+			} catch (Exception e) {
+				return null;
+			}
 			
 			if (user != null) {
 				User usuario = new User(user, "", Collections.emptyList());
