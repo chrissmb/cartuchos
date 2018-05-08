@@ -58,7 +58,7 @@ public class UsuarioController {
 		UserDetails usr = this.getUsuarioLogado();
 		Usuario usuarioDB = dao.findByUsername(usr.getUsername());
 		
-		if(!usuarioDB) {
+		if(usuarioDB == null) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		
