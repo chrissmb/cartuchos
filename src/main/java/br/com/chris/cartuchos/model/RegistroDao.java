@@ -1,7 +1,6 @@
 package br.com.chris.cartuchos.model;
 
 import java.util.Calendar;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -41,7 +41,7 @@ public class Departamento {
 	    return ativo;
 	}
 	
-	public void setAtivo() {
+	public void setAtivo(boolean ativo) {
 	    this.ativo = ativo;
 	}
 }
