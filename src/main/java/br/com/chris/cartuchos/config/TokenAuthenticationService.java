@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -28,9 +29,12 @@ public class TokenAuthenticationService {
 	static final String TOKEN_PREFIX = "Bearer";
 	static final String HEADER_STRING = "Authorization";
 	
-	static void addAuthentication(HttpServletResponse response, String username) {
+	static void addAuthentication(HttpServletResponse response,
+			String username, Collection<? extends GrantedAuthority> roles) {
+		
 		String JWT = Jwts.builder()
 				.setSubject(username)
+				.claim("roles", joinRoles(roles))
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(SignatureAlgorithm.HS512, SECRET)
 				.compact();
@@ -38,42 +42,48 @@ public class TokenAuthenticationService {
 		response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
 	}
 	
+	static String joinRoles(Collection<? extends GrantedAuthority> roles) {
+		StringBuilder sb = new StringBuilder();
+		for (GrantedAuthority role: roles) {
+			if (sb.length() > 0)
+				sb.append("-");
+			sb.append(role.getAuthority());
+		}
+		return sb.toString();
+	}
+	
 	static Authentication getAuthentication(HttpServletRequest request) {
 		String token = request.getHeader(HEADER_STRING);
 		
 		if (token != null) {
-			String user;
+			String user, roles;
 			try {
-				user = Jwts.parser()
+				
+				Claims claims = Jwts.parser()
 						.setSigningKey(SECRET)
 						.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-						.getBody()
-						.getSubject();
+						.getBody();
+				user = claims.getSubject();
+				roles = claims.get("roles", String.class);
 				
 			} catch (Exception e) {
 				return null;
 			}
 			
-			if (user != null) {
-				User usuario = new User(user, "", Collections.emptyList());
-				return new UsernamePasswordAuthenticationToken(usuario, null, getAuths(user));
+			if (user != null && roles != null) {
+				User usuario = new User(user, "", getAuths(roles));
+				return new UsernamePasswordAuthenticationToken(usuario, null, getAuths(roles));
 			}
 		}
 		
 		return null;
 	}
 	
-	static private String getRole(String username) {
-		if (username.equals("admin")) {
-			return "ADMIN";
+	static private Collection<GrantedAuthority> getAuths(String roles) {
+		Collection<GrantedAuthority> collection = new ArrayList<GrantedAuthority>();
+		for (String role: roles.split(",")) {
+			collection.add(new SimpleGrantedAuthority(role));
 		}
-		return "USER";
-	}
-	
-	static private Collection<GrantedAuthority> getAuths(String username) {
-		String role = getRole(username);
-		Collection<GrantedAuthority> coll = new ArrayList<GrantedAuthority>();
-		coll.add(new SimpleGrantedAuthority(role));
-		return coll;
+		return collection;
 	}
 }
