@@ -40,7 +40,7 @@ public class UsuarioController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Usuario> getUsuario(@PathVariable Long id) {
-		return new ResponseEntity<>(dao.findOne(id), HttpStatus.OK);
+		return new ResponseEntity<>(dao.findById(id).get(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/logado")
@@ -85,7 +85,7 @@ public class UsuarioController {
 			@PathVariable Long id,
 			@RequestBody Usuario usuario) {
 		if (usuario.getSenha().length() < senhaTamanhoMin) {
-			Usuario usuarioDB = dao.findOne(id);
+			Usuario usuarioDB = dao.findById(id).get();
 			usuario.setPassword(usuarioDB.getPassword());
 		} else {
 			usuario.setPassword(hashSenha(usuario.getSenha()));
@@ -97,7 +97,7 @@ public class UsuarioController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
-		dao.delete(id);
+		dao.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	

@@ -39,7 +39,7 @@ public class DepartamentoController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Departamento> getDepartamento(@PathVariable Long id) {
-		return new ResponseEntity<>(dao.findOne(id), HttpStatus.OK);
+		return new ResponseEntity<>(dao.findById(id).get(), HttpStatus.OK);
 	}
 	
 	@GetMapping(params = "descricao")
@@ -70,7 +70,7 @@ public class DepartamentoController {
 	public ResponseEntity<?> deleteDepartamento(@PathVariable Long id) {
 		if (id == 1)
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		dao.delete(id);
+		dao.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 

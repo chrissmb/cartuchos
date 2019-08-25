@@ -39,7 +39,7 @@ public class CartuchoController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cartucho> getCartucho(@PathVariable Long id) {
-		return new ResponseEntity<>(dao.findOne(id), HttpStatus.OK);
+		return new ResponseEntity<>(dao.findById(id).get(), HttpStatus.OK);
 	}
 	
 	@GetMapping(params = "descricaoStartingWith")
@@ -59,7 +59,7 @@ public class CartuchoController {
 			cartucho.setQuantidade(0);
 			return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
 		}
-		Cartucho cartuchoDb = dao.findOne(cartucho.getId());
+		Cartucho cartuchoDb = dao.findById(cartucho.getId()).get();
 		if (cartuchoDb != null) {
 			cartucho.setQuantidade(cartuchoDb.getQuantidade());
 		} else {
@@ -72,7 +72,7 @@ public class CartuchoController {
 	public ResponseEntity<Cartucho> updateCartucho(@RequestBody Cartucho cartucho, 
 			@PathVariable Long id) {
 		cartucho.setId(id);
-		Cartucho cartuchoDb = dao.findOne(id);
+		Cartucho cartuchoDb = dao.findById(id).get();
 		if (cartuchoDb != null) {
 			cartucho.setQuantidade(cartuchoDb.getQuantidade());
 		} else {
@@ -83,7 +83,7 @@ public class CartuchoController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteCartucho(@PathVariable Long id) {
-		dao.delete(id);
+		dao.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

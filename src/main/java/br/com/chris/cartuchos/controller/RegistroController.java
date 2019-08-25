@@ -66,12 +66,12 @@ public class RegistroController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Registro> getRegistro(@PathVariable Long id) {
-		return new ResponseEntity<>(dao.findOne(id), HttpStatus.OK);
+		return new ResponseEntity<>(dao.findById(id).get(), HttpStatus.OK);
 	}
 	
 	@PostMapping()
 	public ResponseEntity<Registro> addRegistro(@RequestBody Registro registro) {
-		Cartucho cartucho = cartuchoDao.findOne(registro.getCartucho().getId());
+		Cartucho cartucho = cartuchoDao.findById(registro.getCartucho().getId()).get();
 		if (cartucho == null)
 			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 		int qtdRegistro = registro.getQuantidade();
@@ -107,7 +107,7 @@ public class RegistroController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteRegistro(@PathVariable Long id) {
-		dao.delete(id);
+		dao.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }
