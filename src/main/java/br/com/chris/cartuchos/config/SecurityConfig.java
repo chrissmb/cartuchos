@@ -1,7 +1,5 @@
 package br.com.chris.cartuchos.config;
 
-import java.util.Arrays;
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +12,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
+	
+	private final String[] ALLOWED_CORS = {
+			"https://cartuchos-angular.netlify.com",
+			"https://cartuchos-angular.web.app",
+			"https://cartuchos-angular.firebaseapp.com",
+			"http://localhost:4200",
+			"http://127.0.0.1:4200"
+	};
 	
 	@Autowired
 	private DataSource dataSource;
@@ -37,10 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 						+ "where username = ? and enabled = true")
 				.authoritiesByUsernameQuery(
 						"select username, role from usuario where username = ?");
-			/*.inMemoryAuthentication()
-				.withUser("chris").password("123456").roles("USER")
-				.and()
-				.withUser("admin").password("321").roles("ADMIN");*/
 	}
 	
 	@Override
@@ -88,20 +89,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	}
 	
 	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("*"));
-		configuration.setAllowedMethods(Arrays.asList("*"));
-		configuration.setExposedHeaders(Arrays.asList("Authorization","Cache-Control"));
-		configuration.setAllowedHeaders(Arrays.asList("*"));
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
+	public WebMvcConfigurer corsConfigure() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+					.allowedOrigins(ALLOWED_CORS)
+					.exposedHeaders("Authorization","Cache-Control");
+			}
+		};
 	}
-	
-	/* @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.debug(true);
-    } */
 	
 }
