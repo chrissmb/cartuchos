@@ -15,73 +15,56 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.chris.cartuchos.model.Cartucho;
-import br.com.chris.cartuchos.model.CartuchoDao;
+import br.com.chris.cartuchos.model.bean.Cartucho;
+import br.com.chris.cartuchos.model.bo.CartuchoBo;
 
 @RestController
 @RequestMapping("/cartuchos")
 public class CartuchoController {
 	
 	@Autowired
-	private CartuchoDao dao;
+	private CartuchoBo bo;
 	
 	@GetMapping()
 	public ResponseEntity<List<Cartucho>> getCartuchosAtivos() {
-		return new ResponseEntity<>(dao.findByAtivoTrue(), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getCatuchosAtivos(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/all")
 	public ResponseEntity<List<Cartucho>> getAllCartuchos() {
-		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getCartuchos(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cartucho> getCartucho(@PathVariable Long id) {
-		return new ResponseEntity<>(dao.findById(id).get(), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getById(id), HttpStatus.OK);
 	}
 	
-	@GetMapping(params = "descricaoStartingWith")
-	public ResponseEntity<List<Cartucho>> getCartuchoByDescricaoStartingWith(
+	@GetMapping(params = "descricaoContem")
+	public ResponseEntity<List<Cartucho>> getCartuchoByDescricaoContem(
 			@RequestParam(value="descricaoStartingWith") String descricao) {
-		return new ResponseEntity<>(dao.findByDescricaoStartingWith(descricao), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getByDescricaoContem(descricao), HttpStatus.OK);
 	}
 	
 	@GetMapping("ativo")
 	public ResponseEntity<List<Cartucho>> getCartuchoByAtivoTrue() {
-		return new ResponseEntity<>(dao.findByAtivoTrue(), HttpStatus.OK);
+		return getCartuchosAtivos();
 	}
 	
 	@PostMapping()
 	public ResponseEntity<Cartucho> addCartucho(@RequestBody Cartucho cartucho) {
-		if (cartucho.getId() == null) {
-			cartucho.setQuantidade(0);
-			return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
-		}
-		Cartucho cartuchoDb = dao.findById(cartucho.getId()).get();
-		if (cartuchoDb != null) {
-			cartucho.setQuantidade(cartuchoDb.getQuantidade());
-		} else {
-			cartucho.setQuantidade(0);
-		}
-		return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
+		return new ResponseEntity<>(bo.addCartucho(cartucho), HttpStatus.OK);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Cartucho> updateCartucho(@RequestBody Cartucho cartucho, 
-			@PathVariable Long id) {
-		cartucho.setId(id);
-		Cartucho cartuchoDb = dao.findById(id).get();
-		if (cartuchoDb != null) {
-			cartucho.setQuantidade(cartuchoDb.getQuantidade());
-		} else {
-			cartucho.setQuantidade(0);
-		}		
-		return new ResponseEntity<>(dao.save(cartucho), HttpStatus.OK);
+			@PathVariable Long id) {		
+		return new ResponseEntity<>(bo.updateCartucho(cartucho, id), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteCartucho(@PathVariable Long id) {
-		dao.deleteById(id);
+		bo.deleteCartucho(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

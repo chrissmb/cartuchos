@@ -15,60 +15,51 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.chris.cartuchos.model.Departamento;
-import br.com.chris.cartuchos.model.DepartamentoDao;
+import br.com.chris.cartuchos.model.bean.Departamento;
+import br.com.chris.cartuchos.model.bo.DepartamentoBo;
 
 @RestController
 @RequestMapping("/departamentos")
 public class DepartamentoController {
 	
 	@Autowired
-	private DepartamentoDao dao;
+	private DepartamentoBo bo;
 	
 	@GetMapping()
 	public ResponseEntity<List<Departamento>> getDepartamentosAtivos() {
-		return new ResponseEntity<>(dao.findByAtivo(true), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getDepartamentosAtivos(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/all")
-	public ResponseEntity<List<Departamento>> getAllDepartamento() {
-		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
+	public ResponseEntity<List<Departamento>> getDepartamentos() {
+		return new ResponseEntity<>(bo.getDepartamentos(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Departamento> getDepartamento(@PathVariable Long id) {
-		return new ResponseEntity<>(dao.findById(id).get(), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getDepartamento(id), HttpStatus.OK);
 	}
 	
 	@GetMapping(params = "descricao")
 	public ResponseEntity<Departamento> getDepartamentoByDescricao(
 			@RequestParam(value="descricao") String descricao) {
-		return new ResponseEntity<>(dao.findByDescricao(descricao), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getDepartamentoByDescricao(descricao), HttpStatus.OK);
 	}
 	
 	@PostMapping()
 	public ResponseEntity<Departamento> addDepartamento(@RequestBody Departamento departamento) {
-		if (departamento.getId() != null) {
-			if (departamento.getId() == 1)
-				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-		return new ResponseEntity<>(dao.save(departamento), HttpStatus.OK);
+		return new ResponseEntity<>(bo.addDepartamento(departamento), HttpStatus.OK);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Departamento> updateDepartamento(@RequestBody Departamento departamento, 
 			@PathVariable Long id) {
-		if (id == 1)
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		departamento.setId(id);
-		return new ResponseEntity<>(dao.save(departamento), HttpStatus.OK);
+		return new ResponseEntity<>(bo.updateDepartamento(departamento, id), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteDepartamento(@PathVariable Long id) {
-		if (id == 1)
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		dao.deleteById(id);
+		bo.deleteDepartamento(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 

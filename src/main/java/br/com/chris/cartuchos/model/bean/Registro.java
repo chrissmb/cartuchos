@@ -1,4 +1,4 @@
-package br.com.chris.cartuchos.model;
+package br.com.chris.cartuchos.model.bean;
 
 import java.util.Calendar;
 
@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+
+import br.com.chris.cartuchos.model.Operacao;
 
 @Entity
 public class Registro {
@@ -92,5 +94,36 @@ public class Registro {
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Registro other = (Registro) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Registro [id=" + id + ", cartucho=" + cartucho + ", departamento=" + departamento + ", quantidade="
+				+ quantidade + ", data=" + data + ", operacao=" + operacao + ", usuario=" + usuario + "]";
 	}
 }

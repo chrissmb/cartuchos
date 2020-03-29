@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.chris.cartuchos.model.Usuario;
-import br.com.chris.cartuchos.model.UsuarioDao;
+import br.com.chris.cartuchos.model.bean.Usuario;
+import br.com.chris.cartuchos.model.dao.UsuarioDao;
 
 @RestController
 @RequestMapping("usuarios")

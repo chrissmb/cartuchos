@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.chris.cartuchos.model.Cartucho;
-import br.com.chris.cartuchos.model.CartuchoDao;
-import br.com.chris.cartuchos.model.Departamento;
 import br.com.chris.cartuchos.model.Operacao;
-import br.com.chris.cartuchos.model.Registro;
-import br.com.chris.cartuchos.model.RegistroDao;
+import br.com.chris.cartuchos.model.bean.Cartucho;
+import br.com.chris.cartuchos.model.bean.Departamento;
+import br.com.chris.cartuchos.model.bean.Registro;
+import br.com.chris.cartuchos.model.dao.CartuchoDao;
+import br.com.chris.cartuchos.model.dao.RegistroDao;
 
 @RestController
 @RequestMapping("/registros")
