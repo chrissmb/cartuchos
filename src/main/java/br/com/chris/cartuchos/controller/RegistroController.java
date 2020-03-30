@@ -18,26 +18,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.chris.cartuchos.model.Operacao;
-import br.com.chris.cartuchos.model.bean.Cartucho;
-import br.com.chris.cartuchos.model.bean.Departamento;
 import br.com.chris.cartuchos.model.bean.Registro;
-import br.com.chris.cartuchos.model.dao.CartuchoDao;
-import br.com.chris.cartuchos.model.dao.RegistroDao;
+import br.com.chris.cartuchos.model.bo.RegistroBo;
 
 @RestController
 @RequestMapping("/registros")
 public class RegistroController {
 	
 	@Autowired
-	private RegistroDao dao;
-	
-	@Autowired
-	private CartuchoDao cartuchoDao;
+	private RegistroBo bo;
 	
 	@GetMapping()
 	public ResponseEntity<List<Registro>> getAllRegistros() {
-		return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getAllRegistros(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/pageable")
@@ -49,63 +42,23 @@ public class RegistroController {
 		    @RequestParam(name = "dtfim", required = false)
 		    @DateTimeFormat(pattern = "dd-MM-yyyy")
 		    Calendar dataFim
-			) {
-		if (dataInicio != null && dataFim != null) {
-			dataInicio.set(Calendar.HOUR_OF_DAY, 0);
-			dataInicio.set(Calendar.MINUTE, 0);
-			dataInicio.set(Calendar.SECOND, 0);
-			dataFim.set(Calendar.HOUR_OF_DAY, 23);
-			dataFim.set(Calendar.MINUTE, 59);
-			dataFim.set(Calendar.SECOND, 59);
-			return new ResponseEntity<>(dao.findByDataBetween(dataInicio, dataFim, pageable), HttpStatus.OK);
-		}
-		return new ResponseEntity<>(dao.findAll(pageable), HttpStatus.OK);
+	) {
+		return new ResponseEntity<>(bo.getAllRegistrosPageable(pageable, dataInicio, dataFim), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Registro> getRegistro(@PathVariable Long id) {
-		return new ResponseEntity<>(dao.findById(id).get(), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getRegistro(id), HttpStatus.OK);
 	}
 	
 	@PostMapping()
 	public ResponseEntity<Registro> addRegistro(@RequestBody Registro registro) {
-		Cartucho cartucho = cartuchoDao.findById(registro.getCartucho().getId()).get();
-		if (cartucho == null)
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		int qtdRegistro = registro.getQuantidade();
-		int qtdCartucho = cartucho.getQuantidade();
-		
-		if (registro.getOperacao().equals(Operacao.ENTRADA)) {
-			cartucho.setQuantidade(qtdCartucho + qtdRegistro);
-			registro.setDepartamento(new Departamento());
-			registro.getDepartamento().setId(1L);
-			cartuchoDao.save(cartucho);
-		} else {
-			if (registro.getDepartamento() == null)
-				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-			if (registro.getDepartamento().getId() == 1L)
-				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-			if (qtdRegistro <= qtdCartucho) {
-				cartucho.setQuantidade(qtdCartucho - qtdRegistro);
-				cartuchoDao.save(cartucho);
-			} else {
-				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-			}
-		}
-		registro.setData(Calendar.getInstance());
-		return new ResponseEntity<>(dao.save(registro), HttpStatus.CREATED);
+		return new ResponseEntity<>(bo.addRegistro(registro), HttpStatus.CREATED);
 	}
-	
-	/*@PutMapping("/{id}")
-	public ResponseEntity<Registro> updateRegistro(@RequestBody Registro registro,
-			@PathVariable Long id) {
-		registro.setId(id);
-		return new ResponseEntity<>(dao.save(registro), HttpStatus.OK);
-	}*/
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteRegistro(@PathVariable Long id) {
-		dao.deleteById(id);
+		bo.deleteRegistro(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

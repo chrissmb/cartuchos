@@ -53,7 +53,7 @@ public class CartuchoController {
 	
 	@PostMapping()
 	public ResponseEntity<Cartucho> addCartucho(@RequestBody Cartucho cartucho) {
-		return new ResponseEntity<>(bo.addCartucho(cartucho), HttpStatus.OK);
+		return new ResponseEntity<>(bo.addCartucho(cartucho), HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/{id}")

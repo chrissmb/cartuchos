@@ -22,7 +22,8 @@ public class Cartucho {
 	private String descricao;
 	
 	@Min(0)
-	private int quantidade;
+	@NotNull
+	private int quantidade = 0;
 	
 	private boolean ativo;
 

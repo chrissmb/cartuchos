@@ -3,13 +3,14 @@ package br.com.chris.cartuchos.model.bo;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import br.com.chris.cartuchos.model.bean.Departamento;
 import br.com.chris.cartuchos.model.dao.DepartamentoDao;
 
-@Component
+@Service
 public class DepartamentoBo {
 
 	@Autowired
@@ -30,23 +31,26 @@ public class DepartamentoBo {
 		return dao.findByDescricao(descricao);
 	}
 	
+	@Transactional
 	public Departamento addDepartamento(Departamento departamento) {
 		departamento.setId(null);
 		validaDescricao(departamento);
 		return dao.save(departamento);
 	}
-
+	
+	@Transactional
 	public Departamento updateDepartamento(Departamento departamento, Long id) {
 		if (id == 1)
-			throw new RuntimeException("Não é permitido alterar o departamento admin.");
+			throw new RuntimeException("Departamento inválido.");
 		departamento.setId(id);
 		validaDescricao(departamento);
 		return dao.save(departamento);
 	}
 	
+	@Transactional
 	public void deleteDepartamento(@PathVariable Long id) {
 		if (id == 1)
-			throw new RuntimeException("Não é permitido excluir o departamento admin.");
+			throw new RuntimeException("Departamento inválido.");
 		dao.deleteById(id);
 	}
 	

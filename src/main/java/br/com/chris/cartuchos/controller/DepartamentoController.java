@@ -48,7 +48,7 @@ public class DepartamentoController {
 	
 	@PostMapping()
 	public ResponseEntity<Departamento> addDepartamento(@RequestBody Departamento departamento) {
-		return new ResponseEntity<>(bo.addDepartamento(departamento), HttpStatus.OK);
+		return new ResponseEntity<>(bo.addDepartamento(departamento), HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/{id}")
