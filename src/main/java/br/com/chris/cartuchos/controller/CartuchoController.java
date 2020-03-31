@@ -37,7 +37,7 @@ public class CartuchoController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cartucho> getCartucho(@PathVariable Long id) {
-		return new ResponseEntity<>(bo.getById(id), HttpStatus.OK);
+		return new ResponseEntity<>(bo.getCartucho(id), HttpStatus.OK);
 	}
 	
 	@GetMapping(params = "descricaoContem")

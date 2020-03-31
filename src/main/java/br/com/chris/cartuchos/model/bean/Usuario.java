@@ -24,7 +24,7 @@ public class Usuario {
 	private Long id;
 	
 	@Column(unique=true)
-	@Size(min=3,max=10)
+	@Size(min=3, max=10)
 	@NotNull
 	private String username;
 	
@@ -34,13 +34,13 @@ public class Usuario {
 	@Transient // ignora persistencia
 	private String senhaAtual;//Utilizado na mudança da senha para validar senha atual.
 	
-	// @JsonIgnore
 	@JsonProperty(access = Access.WRITE_ONLY)
-	@Size(min=60,max=60)
+	@Size(min=60, max=60)
 	@NotNull
 	private String password;
 	
-	private boolean enabled;
+	@NotNull
+	private boolean enabled = true;
 	
 	@Enumerated(EnumType.STRING)
 	@NotNull

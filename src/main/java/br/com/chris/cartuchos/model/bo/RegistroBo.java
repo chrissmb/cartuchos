@@ -52,12 +52,10 @@ public class RegistroBo {
 		if (registro.getOperacao().equals(Operacao.ENTRADA)) {
 			registro.setDepartamento(new Departamento());
 			registro.getDepartamento().setId(1L);
-			cartuchoBo.estoqueCartucho(registro.getCartucho().getId(), registro.getQuantidade());
 		} else if (registro.getDepartamento() == null || registro.getDepartamento().getId() == 1L) {
 			throw new RuntimeException("Departamento inválido.");
-		} else {
-			cartuchoBo.estoqueCartucho(registro.getCartucho().getId(), -registro.getQuantidade());
 		}
+		cartuchoBo.estoqueCartucho(registro.getCartucho().getId(), registro.getQuantidade(), registro.getOperacao());
 		registro.setData(Calendar.getInstance());
 		return dao.save(registro);
 	}

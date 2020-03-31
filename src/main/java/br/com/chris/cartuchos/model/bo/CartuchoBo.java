@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.chris.cartuchos.model.Operacao;
 import br.com.chris.cartuchos.model.bean.Cartucho;
 import br.com.chris.cartuchos.model.dao.CartuchoDao;
 
@@ -23,7 +24,7 @@ public class CartuchoBo {
 		return dao.findAll();
 	}
 	
-	public Cartucho getById(Long id) {
+	public Cartucho getCartucho(Long id) {
 		return dao.findById(id).get();
 	}
 	
@@ -52,11 +53,16 @@ public class CartuchoBo {
 	}
 	
 	@Transactional
-	public Cartucho estoqueCartucho(Long idCartucho, int qtdIncluir) {
+	public Cartucho estoqueCartucho(Long idCartucho, int quantidade, Operacao operacao) {
 		Cartucho cartucho = dao.getOne(idCartucho);
 		if (cartucho == null)
 			throw new RuntimeException("Cartucho inválido.");
-		int estoque = cartucho.getQuantidade() + qtdIncluir;
+		int estoque = cartucho.getQuantidade();
+		if (operacao.equals(Operacao.ENTRADA)) {
+			estoque += quantidade;
+		} else {
+			estoque -= quantidade;
+		}
 		if (estoque < 0)
 			throw new RuntimeException("Estoque negativo.");
 		cartucho.setQuantidade(estoque);

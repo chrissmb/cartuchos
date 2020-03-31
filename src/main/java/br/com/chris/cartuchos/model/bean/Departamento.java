@@ -19,7 +19,8 @@ public class Departamento {
     @NotNull
 	private String descricao;
 	
-	private boolean ativo;
+    @NotNull
+	private boolean ativo = true;
 	
 	public Long getId() {
 	    return id;

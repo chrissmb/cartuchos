@@ -25,7 +25,8 @@ public class Cartucho {
 	@NotNull
 	private int quantidade = 0;
 	
-	private boolean ativo;
+	@NotNull
+	private boolean ativo = true;
 
 	public Long getId() {
 		return id;
@@ -40,7 +41,8 @@ public class Cartucho {
 	}
 
 	public void setDescricao(String descricao) {
-		this.descricao = descricao.toUpperCase();
+		if (descricao != null)
+			this.descricao = descricao.toUpperCase();
 	}
 
 	public int getQuantidade() {
