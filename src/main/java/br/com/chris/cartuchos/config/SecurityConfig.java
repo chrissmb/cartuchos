@@ -38,10 +38,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 				.dataSource(dataSource)
 				.passwordEncoder(new BCryptPasswordEncoder())
 				.usersByUsernameQuery(
-						"select username, password, enabled from usuario "
-						+ "where username = ? and enabled = true")
+						"select login as username, senha_hash as password, enabled "
+						+ "from usuario "
+						+ "where login = ? and enabled = true")
 				.authoritiesByUsernameQuery(
-						"select username, role from usuario where username = ?");
+						"select login as username, role from usuario where login = ?");
 	}
 	
 	@Override

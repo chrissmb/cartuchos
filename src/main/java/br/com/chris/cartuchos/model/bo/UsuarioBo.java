@@ -34,36 +34,36 @@ public class UsuarioBo {
 	
 	public Usuario getLogado() {
 		UserDetails usuario = this.getUsuarioLogado();
-		return dao.findByUsername(usuario.getUsername());
+		return dao.findByLogin(usuario.getUsername());
 	}
 	
 	@Transactional
 	public Usuario alteraSenha(Usuario usuario) {
-		if (usuario.getSenha().length() < SENHA_TAMANHO_MIN)
+		if (usuario.getSenhaPlana().length() < SENHA_TAMANHO_MIN)
 			throw new RuntimeException(MSG_SENHA_TAM_MIN);
 		UserDetails usr = this.getUsuarioLogado();
-		Usuario usuarioDB = dao.findByUsername(usr.getUsername());
+		Usuario usuarioDB = dao.findByLogin(usr.getUsername());
 		if(usuarioDB == null)
 			throw new RuntimeException("Usuário inválido.");
-		boolean eSenhaAtualValida = validaHash(usuario.getSenhaAtual(), usuarioDB.getPassword());
+		boolean eSenhaAtualValida = validaHash(usuario.getSenhaConfirmar(), usuarioDB.getSenhaHash());
 		if (!eSenhaAtualValida)
 			throw new RuntimeException("Senha inválida.");
-		usuarioDB.setPassword(hashSenha(usuario.getSenha()));
+		usuarioDB.setSenhaHash((hashSenha(usuario.getSenhaPlana())));
 		return dao.save(usuarioDB);
 	}
 	
 	@Transactional
 	public Usuario addUsuario(Usuario usuario) {
-		if (usuario.getSenha().length() < SENHA_TAMANHO_MIN)
+		if (usuario.getSenhaPlana().length() < SENHA_TAMANHO_MIN)
 			throw new RuntimeException(MSG_SENHA_TAM_MIN);
-		usuario.setPassword(hashSenha(usuario.getSenha()));
+		usuario.setSenhaHash(hashSenha(usuario.getSenhaPlana()));
 		return dao.save(usuario);
 	}
 	
 	@Transactional
 	public Usuario updateUsuario(Long id, Usuario usuario) {
 		Usuario usuarioDB = dao.findById(id).get();
-		usuario.setPassword(usuarioDB.getPassword());
+		usuario.setSenhaHash(usuarioDB.getSenhaHash());
 		usuario.setId(id);
 		return dao.save(usuario);
 	}

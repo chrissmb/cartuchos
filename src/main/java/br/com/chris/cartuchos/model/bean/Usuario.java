@@ -11,8 +11,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.chris.cartuchos.model.Role;
 
@@ -23,21 +22,25 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(unique=true)
-	@Size(min=3, max=10)
+	@Column(unique = true)
+	@Size(min = 3, max = 10)
 	@NotNull
-	private String username;
+	private String login;
 	
-	@Transient // ignora persistencia
-	private String senha; //Utilizado para enviar senha em texto plano por REST.
+	@Size(max = 200)
+	private String nome;
 	
-	@Transient // ignora persistencia
-	private String senhaAtual; //Utilizado na mudança da senha para validar senha atual.
+	@Transient
+	private String senhaPlana;
 	
-	@JsonProperty(access = Access.WRITE_ONLY)
+	@Transient
+	private String senhaConfirmar;
+	
+	@JsonIgnore
 	@Size(min=60, max=60)
 	@NotNull
-	private String password; //Senha em hash
+	@Column(name = "senha_hash")
+	private String senhaHash;
 	
 	@NotNull
 	private boolean enabled = true;
@@ -54,36 +57,44 @@ public class Usuario {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getLogin() {
+		return login;
 	}
 
-	public void setUsername(String username) {
-		this.username = username.toLowerCase();
-	}
-	
-	public String getSenha() {
-		return senha;
+	public void setLogin(String login) {
+		this.login = login;
 	}
 
-	public void setSenha(String senha) {
-		this.senha = senha;
+	public String getNome() {
+		return nome;
 	}
 
-	public String getSenhaAtual() {
-		return senhaAtual;
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
-	public void setSenhaAtual(String senhaAtual) {
-		this.senhaAtual = senhaAtual;
+	public String getSenhaPlana() {
+		return senhaPlana;
 	}
 
-	public String getPassword() {
-		return password;
+	public void setSenhaPlana(String senhaPlana) {
+		this.senhaPlana = senhaPlana;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public String getSenhaConfirmar() {
+		return senhaConfirmar;
+	}
+
+	public void setSenhaConfirmar(String senhaConfirmar) {
+		this.senhaConfirmar = senhaConfirmar;
+	}
+
+	public String getSenhaHash() {
+		return senhaHash;
+	}
+
+	public void setSenhaHash(String senhaHash) {
+		this.senhaHash = senhaHash;
 	}
 
 	public boolean isEnabled() {
@@ -129,6 +140,6 @@ public class Usuario {
 
 	@Override
 	public String toString() {
-		return "Usuario [id=" + id + ", username=" + username + ", enabled=" + enabled + ", role=" + role + "]";
+		return String.format("Usuario [id=%s, login=%s, enabled=%s, role=%s]", id, login, enabled, role);
 	}
 }

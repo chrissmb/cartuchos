@@ -6,5 +6,5 @@ import br.com.chris.cartuchos.model.bean.Usuario;
 
 public interface UsuarioDao extends JpaRepository<Usuario, Long> {
 	
-	Usuario findByUsername(String username);
+	Usuario findByLogin(String login);
 }
