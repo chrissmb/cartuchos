@@ -32,12 +32,12 @@ public class Usuario {
 	private String senha; //Utilizado para enviar senha em texto plano por REST.
 	
 	@Transient // ignora persistencia
-	private String senhaAtual;//Utilizado na mudança da senha para validar senha atual.
+	private String senhaAtual; //Utilizado na mudança da senha para validar senha atual.
 	
 	@JsonProperty(access = Access.WRITE_ONLY)
 	@Size(min=60, max=60)
 	@NotNull
-	private String password;
+	private String password; //Senha em hash
 	
 	@NotNull
 	private boolean enabled = true;
