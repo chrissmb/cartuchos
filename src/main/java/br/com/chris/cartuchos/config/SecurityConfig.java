@@ -48,15 +48,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http
-			.cors().and()
+			//.cors().and()
 			.csrf().disable()
-			.formLogin().loginPage("/login").permitAll()
-			.failureUrl("/loginError")
-			.and()
+			//.formLogin().loginPage("/login").permitAll()
+			//.failureUrl("/loginError")
+			//.and()
 			/*.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
 				.logoutSuccessUrl("/login")
 			.and()*/
-			.headers().frameOptions().disable().and() // resolve tela branca h2 console
+			//.headers().frameOptions().disable().and() // resolve tela branca h2 console
 			.authorizeRequests()
 				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.antMatchers(
@@ -75,13 +75,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 						"/webjars/**",
 						"/js/**")
 					.permitAll()
-				.antMatchers(HttpMethod.POST, "/xlogin").permitAll()
+				.antMatchers(HttpMethod.POST, "/login").permitAll()
 				.anyRequest().authenticated()
 				.and()
-				.httpBasic() //Libera autenticação basica (funciona no Postman)
-				.and()
+				//.httpBasic() //Libera autenticação basica (funciona no Postman)
+				//.and()
 				// filtra requisições de login
-				.addFilterBefore(new JWTLoginFilter("/xlogin", authenticationManager()),
+				.addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
 		                UsernamePasswordAuthenticationFilter.class)
 				
 				// filtra outras requisições para verificar a presença do JWT no header
