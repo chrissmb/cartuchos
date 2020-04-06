@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.chris.cartuchos.model.NegocioException;
 import br.com.chris.cartuchos.model.Operacao;
 import br.com.chris.cartuchos.model.bean.Departamento;
 import br.com.chris.cartuchos.model.bean.Registro;
@@ -47,13 +48,13 @@ public class RegistroBo {
 	@Transactional
 	public Registro addRegistro(Registro registro) {
 		if (registro.getCartucho() == null || registro.getOperacao() == null)
-			throw new RuntimeException("Preenchimento obrigatório para cartucho e operação.");
+			throw new NegocioException("Preenchimento obrigatório para cartucho e operação.");
 		
 		if (registro.getOperacao().equals(Operacao.ENTRADA)) {
 			registro.setDepartamento(new Departamento());
 			registro.getDepartamento().setId(1L);
 		} else if (registro.getDepartamento() == null || registro.getDepartamento().getId() == 1L) {
-			throw new RuntimeException("Departamento inválido.");
+			throw new NegocioException("Departamento inválido.");
 		}
 		cartuchoBo.estoqueCartucho(registro.getCartucho().getId(), registro.getQuantidade(), registro.getOperacao());
 		registro.setData(Calendar.getInstance());

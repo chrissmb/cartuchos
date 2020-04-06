@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.chris.cartuchos.model.NegocioException;
 import br.com.chris.cartuchos.model.Operacao;
 import br.com.chris.cartuchos.model.bean.Cartucho;
 import br.com.chris.cartuchos.model.dao.CartuchoDao;
@@ -45,7 +46,7 @@ public class CartuchoBo {
 		cartucho.setId(id);
 		Cartucho cartuchoDb = dao.findById(id).get();
 		if (cartuchoDb == null) {
-			throw new RuntimeException("Cartucho inexistente.");
+			throw new NegocioException("Cartucho inexistente.");
 		}		
 		cartucho.setQuantidade(cartuchoDb.getQuantidade());
 		validaDescricao(cartucho);
@@ -56,7 +57,7 @@ public class CartuchoBo {
 	public Cartucho estoqueCartucho(Long idCartucho, int quantidade, Operacao operacao) {
 		Cartucho cartucho = dao.getOne(idCartucho);
 		if (cartucho == null)
-			throw new RuntimeException("Cartucho inválido.");
+			throw new NegocioException("Cartucho inválido.");
 		int estoque = cartucho.getQuantidade();
 		if (operacao.equals(Operacao.ENTRADA)) {
 			estoque += quantidade;
@@ -64,7 +65,7 @@ public class CartuchoBo {
 			estoque -= quantidade;
 		}
 		if (estoque < 0)
-			throw new RuntimeException("Estoque negativo.");
+			throw new NegocioException("Estoque negativo.");
 		cartucho.setQuantidade(estoque);
 		return dao.save(cartucho);
 	}
@@ -77,6 +78,6 @@ public class CartuchoBo {
 	private void validaDescricao(Cartucho cartucho) {
 		Cartucho cartuchoDB =  dao.findByDescricao(cartucho.getDescricao());
 		if (cartuchoDB != null && (cartucho.getId() == null || !cartucho.equals(cartuchoDB)))
-				throw new RuntimeException("Descrição já utilizada.");
+				throw new NegocioException("Descrição já utilizada.");
 	}
 }

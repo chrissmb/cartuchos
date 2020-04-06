@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.chris.cartuchos.model.NegocioException;
 import br.com.chris.cartuchos.model.bean.Usuario;
 import br.com.chris.cartuchos.model.dao.UsuarioDao;
 
@@ -40,14 +41,14 @@ public class UsuarioBo {
 	@Transactional
 	public Usuario alteraSenha(Usuario usuario) {
 		if (usuario.getSenhaPlana().length() < SENHA_TAMANHO_MIN)
-			throw new RuntimeException(MSG_SENHA_TAM_MIN);
+			throw new NegocioException(MSG_SENHA_TAM_MIN);
 		UserDetails usr = this.getUsuarioLogado();
 		Usuario usuarioDB = dao.findByLogin(usr.getUsername());
 		if(usuarioDB == null)
-			throw new RuntimeException("Usuário inválido.");
+			throw new NegocioException("Usuário inválido.");
 		boolean eSenhaAtualValida = validaHash(usuario.getSenhaConfirmar(), usuarioDB.getSenhaHash());
 		if (!eSenhaAtualValida)
-			throw new RuntimeException("Senha inválida.");
+			throw new NegocioException("Senha inválida.");
 		usuarioDB.setSenhaHash((hashSenha(usuario.getSenhaPlana())));
 		return dao.save(usuarioDB);
 	}
@@ -55,7 +56,7 @@ public class UsuarioBo {
 	@Transactional
 	public Usuario addUsuario(Usuario usuario) {
 		if (usuario.getSenhaPlana().length() < SENHA_TAMANHO_MIN)
-			throw new RuntimeException(MSG_SENHA_TAM_MIN);
+			throw new NegocioException(MSG_SENHA_TAM_MIN);
 		usuario.setSenhaHash(hashSenha(usuario.getSenhaPlana()));
 		return dao.save(usuario);
 	}
