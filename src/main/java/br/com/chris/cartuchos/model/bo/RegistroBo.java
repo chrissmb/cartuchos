@@ -24,6 +24,9 @@ public class RegistroBo {
 	@Autowired
 	private CartuchoBo cartuchoBo;
 	
+	@Autowired
+	private UsuarioBo usuarioBo;
+	
 	public List<Registro> getAllRegistros() {
 		return dao.findAll();
 	}
@@ -57,6 +60,7 @@ public class RegistroBo {
 			throw new NegocioException("Departamento inválido.");
 		}
 		cartuchoBo.estoqueCartucho(registro.getCartucho().getId(), registro.getQuantidade(), registro.getOperacao());
+		registro.setUsuario(usuarioBo.getLogado());
 		registro.setData(Calendar.getInstance());
 		return dao.save(registro);
 	}
