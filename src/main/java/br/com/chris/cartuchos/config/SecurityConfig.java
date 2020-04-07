@@ -96,6 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
 					.allowedOrigins(ALLOWED_CORS)
+					.allowedMethods("*")
 					.exposedHeaders("Authorization","Cache-Control");
 			}
 		};
