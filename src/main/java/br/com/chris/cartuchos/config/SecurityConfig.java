@@ -20,9 +20,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	private final String[] ALLOWED_CORS = {
-			"https://cartuchos-angular.netlify.com",
-			"https://cartuchos-angular.web.app",
-			"https://cartuchos-angular.firebaseapp.com",
+			"https://cartuchowebapp.web.app",
+			"https://cartuchowebapp.firebaseapp.com",
 			"http://localhost:4200",
 			"http://127.0.0.1:4200"
 	};
